@@ -1,0 +1,20 @@
+# depslib dependency file v1.0
+1748097258 source:c:\users\laboratorios\desktop\bmp\bmpmanipuleitor\bmp_manipulaitor\funciones_grupo.c
+	"funciones_grupo.h"
+	"funciones_zapata.h"
+
+1748088799 c:\users\laboratorios\desktop\bmp\bmpmanipuleitor\bmp_manipulaitor\funciones_grupo.h
+	<stdio.h>
+	<stdlib.h>
+
+1748097156 source:c:\users\laboratorios\desktop\bmp\bmpmanipuleitor\bmp_manipulaitor\funciones_zapata.c
+	"funciones_zapata.h"
+
+1748097311 c:\users\laboratorios\desktop\bmp\bmpmanipuleitor\bmp_manipulaitor\funciones_zapata.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<stdbool.h>
+	<stdint.h>
+
