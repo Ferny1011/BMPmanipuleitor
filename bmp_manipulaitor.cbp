@@ -31,9 +31,14 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="main.c">
+		<Unit filename="funciones_grupo.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="funciones_grupo.h" />
+		<Unit filename="funciones_zapata.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="funciones_zapata.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

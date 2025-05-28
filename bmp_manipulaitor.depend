@@ -18,3 +18,22 @@
 	<stdbool.h>
 	<stdint.h>
 
+1748097258 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.c
+	"funciones_grupo.h"
+	"funciones_zapata.h"
+
+1748473400 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<stdbool.h>
+	<stdint.h>
+	<math.h>
+
+1748473307 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.h
+	"funciones_grupo.h"
+
+1748473087 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.c
+	"funciones_zapata.h"
+

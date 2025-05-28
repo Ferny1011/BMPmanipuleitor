@@ -4,56 +4,9 @@ void _printMatInt(const void* elem){
     printf("%2d|", *(int*)elem);
 }
 
-int createMat(Imagen* mat, size_t tamElem, int cols, int rows){
-    int row, j;
-    mat->data = malloc(sizeof(void*) * rows);
-    if ( !mat->data ) return 0;
-
-    for ( row = 0; row < rows; row++ ){
-        (mat->data)[row] = malloc(tamElem * cols);
-        if ( (mat->data)[row] == NULL ) {
-            for ( j = 0; j < row; j++ )
-                free( mat->data[j] );
-            free(mat->data);
-            return 0;
-        }
-    }
-    mat->cols = cols;
-    mat->rows = rows;
-    mat->tamElem = tamElem;
-    return 1;
-}
-
-int createMatBloque(Imagen* mat, size_t tamElem, int cols, int rows) {
-    int i;
-    mat->data = malloc(rows * sizeof(void*));
-    if (!mat->data) return 0;
-
-    void* bloque = malloc(rows * cols * tamElem);
-    if (!bloque) {
-        free(mat->data);
-        return 0;
-    }
-
-    for (i = 0; i < rows; i++)
-        mat->data[i] = (char*)bloque + i * cols * tamElem;
-    mat->tamElem = tamElem;
-    mat->cols = cols;
-    mat->rows = rows;
-    return 1;
-}
-
-
-void printMat(Imagen* mat, printStruct printM){
-    int row, col;
-    if (!mat || !mat->data) return;
-    for( row = 0; row < mat->rows; row++ ){
-        putchar('|');
-        for( col = 0; col < mat->cols; col++ ){
-            printM( (mat->data)[row] + (col * mat->tamElem) );
-        }
-        putchar('\n');
-    }
+void _printPixelRGB(const void* elem){
+    PixelRGB* pixel = (PixelRGB*)elem;
+    printf("(%3d,%3d,%3d)|", pixel->r, pixel->g, pixel->b);
 }
 
 int leerHeader(BmpHeader* h, FILE* arch){
@@ -70,57 +23,65 @@ void testHeader(BmpHeader *cabecera){
     printf("Tam Imagen: %d\n", cabecera->tamImagen);
 }
 
-int leerImagen(Imagen* img, FILE* archImg, BmpHeader* imgHeader){
-    if(imgHeader->firma[0] != 'B' || imgHeader->firma[1] != 'M') {
-        fprintf(stderr, "Archivo no es BMP\n");
-        fclose(archImg);
-        return 0;
-    }
-    if(imgHeader->profundidad != 24 || imgHeader->compresion != 0){
-        fprintf(stderr, "Solo se soportan BMPs de 24 bits sin compresion\n");
-        fclose(archImg);
-        return 0;
-    }
-
-    size_t filaConPadding = ((imgHeader->anchura * 3 + 3) / 4) * 4;
-    size_t totalBytes = filaConPadding * (imgHeader->altura > 0 ? imgHeader->altura : -imgHeader->altura);
-
-    uint8_t* buffer = malloc(totalBytes);
-    if (!buffer) {
-        //freeMat(img);
-        fclose(archImg);
-        return 0;
-    }
-
-    fseek(archImg, imgHeader->dataOffset, SEEK_SET);
-    fread(buffer, 1, imgHeader->tamImagen, archImg);
-
-    for (int i = 0; i < (imgHeader->altura > 0 ? imgHeader->altura : -imgHeader->altura); i++) {
-        int fila = imgHeader->altura > 0 ? imgHeader->altura - 1 - i : i;
-        memcpy(img->data[i], buffer + fila * filaConPadding, imgHeader->anchura * sizeof(PixelRGB));
-    }
-
-    free(buffer);
-
-    return 1;
+int leerImagen(const char *fileName, PixelRGB **pixels, BmpHeader *imgHeader)
+{
+	FILE *imgFile = fopen(fileName, "rb");
+	if (!imgFile){
+		perror("Error opening file");
+		return 0;
+	}
+	
+	fread(imgHeader, 54, 1, imgFile);
+	if (imgHeader->firma[0] != 'B' || imgHeader->firma[1] != 'M') {
+		puts("Not a valid BMP file\n");
+		fclose(imgFile);
+		return 0;
+	}
+	int tamFilaConPadding = (int)(4 * ceil((float)(imgHeader->anchura) / 4.0f))*(imgHeader->profundidad / 8);
+	int tamFilaSinPadding = imgHeader->anchura * (imgHeader->profundidad / 8);
+	int totalPixels = imgHeader->anchura * imgHeader->altura;
+	*pixels = (PixelRGB*)malloc(totalPixels * sizeof(PixelRGB));
+	if (*pixels == NULL) {
+		puts("Memory allocation failed\n");
+		fclose(imgFile);
+		return 0;
+	}
+	int i = 0;
+	PixelRGB *currentRowPointer = *pixels+((imgHeader->altura - 1) * imgHeader->anchura);
+	for (i = 0; i < imgHeader->altura; i++) {
+		fseek(imgFile, imgHeader->dataOffset + (i * tamFilaConPadding), SEEK_SET);
+		fread(currentRowPointer, sizeof(PixelRGB), imgHeader->anchura, imgFile);
+		currentRowPointer -= imgHeader->anchura;
+	}
+	fclose(imgFile);
+	return 1;
 }
 
-int guardarImagen(Imagen* img, const char* ruta, BmpHeader* imgHeader) {
-    FILE* f = fopen(ruta, "wb");
-    if (!f) {
-        perror("No se pudo abrir archivo para escritura");
-        return 0;
-    }
-    fwrite(imgHeader, sizeof(BmpHeader), 1, f);
-    int filaPadding = (4 - (img->cols * 3) % 4) % 4;
-    uint8_t pad[3] = {0, 0, 0};
-    for (int i = (int)img->rows - 1; i >= 0; --i) {
-        fwrite(img->data[i], sizeof(PixelRGB), img->cols, f);
-        fwrite(pad, 1, filaPadding, f);
-    }
+void WriteImage(const char *fileName, PixelRGB *pixels, BmpHeader imgHeader)
+{
+	FILE *outputFile = fopen(fileName, "wb");
+	int unpaddedRowSize = imgHeader.anchura * (imgHeader.profundidad / 8);
+	int paddedRowSize = (int)(4 * ceil((float)(imgHeader.anchura) / 4.0f)) * (imgHeader.profundidad / 8);
+	fwrite(&imgHeader, sizeof(BmpHeader), 1, outputFile);
+	fseek(outputFile, imgHeader.dataOffset, SEEK_SET);
 
-    fclose(f);
-    return 1;
+	char *paddingBytes = (char*)calloc(paddedRowSize, 1);
+	for (int i = 0; i < imgHeader.altura; i++) {
+		int pixelOffset = ((imgHeader.altura - i) - 1) * imgHeader.anchura;
+		memcpy(paddingBytes, &pixels[pixelOffset], imgHeader.anchura * sizeof(PixelRGB));
+		fwrite(paddingBytes, 1, paddedRowSize, outputFile);
+	}
+	free(paddingBytes);
+	fclose(outputFile);
+}
+
+void convertToGrayscalePixels(PixelRGB *pixels, int width, int height) {
+    for (int i = 0; i < width * height; i++) {
+        uint8_t gray = (uint8_t)(0.299 * pixels[i].r + 0.587 * pixels[i].g + 0.114 * pixels[i].b);
+        pixels[i].r = gray;
+        pixels[i].g = gray;
+        pixels[i].b = gray;
+    }
 }
 
 
