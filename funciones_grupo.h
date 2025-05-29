@@ -28,7 +28,39 @@ typedef struct __attribute__((packed)) {
 }BmpHeader;
 
 typedef struct {
-    uint8_t r, g, b;
+    uint8_t b, g, r;
 }PixelRGB;
+
+typedef enum {
+    OP_NONE = 0,
+    OP_ACHICAR,
+    OP_ROTAR_DERECHA,
+    OP_ROTAR_IZQUIERDA,
+    OP_RECORTAR,
+    OP_ESPEJAR_HORIZONTAL,
+    OP_ESPEJAR_VERTICAL,
+    OP_CONCATENAR_HORIZONTAL,
+    OP_CONCATENAR_VERTICAL,
+    OP_ESCALA_GRISES,
+    OP_TONALIDAD_AZUL,
+    OP_TONALIDAD_ROJA,
+    OP_TONALIDAD_VERDE,
+    OP_AUMENTAR_CONTRASTE,
+    OP_DISMINUIR_CONTRASTE,
+    OP_NEGATIVO
+}TipoOperacion;
+
+typedef struct {
+    TipoOperacion operacion;
+    int valor;
+    bool activo;
+}OperacionImagen;
+
+typedef struct {
+    OperacionImagen operaciones[16];
+    int numOperaciones;
+    char* imgFiles[2];
+    int cantImg;
+}OpcionesImagen;
 
 #endif // FUNCIONES_GRUPO_H
