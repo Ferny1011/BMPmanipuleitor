@@ -2,35 +2,27 @@
 #include "funciones_zapata.h"
 
 
+
 /**
 * Apellido(s), nombre(s):
-* DNI: (sólo números, sin puntos)
-* Entrega: Sí/No.
+* DNI: (sï¿½lo nï¿½meros, sin puntos)
+* Entrega: Sï¿½/No.
 *
 * Apellido(s), nombre(s): Zapata Santiago
 * DNI: 44525943
-* Entrega: Sí/No.
+* Entrega: Sï¿½/No.
 *
 * Apellido(s), nombre(s):
-* DNI: (sólo números, sin puntos)
-* Entrega: Sí/No.
+* DNI: (sï¿½lo nï¿½meros, sin puntos)
+* Entrega: Sï¿½/No.
 */
 
-int main()
-{
-    Imagen img;
-    BmpHeader cabecera;
-    FILE *f = fopen("imagen.bmp", "rb");
-    if (!f) {
-        perror("No se pudo abrir el archivo");
-        return 1;
-    }
-    leerHeader(&cabecera, f);
-    testHeader(&cabecera);
-    createMatBloque(&img, sizeof(PixelRGB), cabecera.anchura, cabecera.altura);
-    leerImagen(&img, f, &cabecera);
-    guardarImagen(&img, "guardada.bmp", &cabecera);
-
-    fclose(f);
-    return 0;
+int main(){
+    PixelRGB *pixels;
+	BmpHeader imgHeader;
+	leerImagen("resources/imagen.bmp", &pixels, &imgHeader);
+	convertToGrayscalePixels(pixels, imgHeader.anchura, imgHeader.altura);
+	WriteImage("resources/img_gray.bmp", pixels, imgHeader);
+	free(pixels);
+	return 0;
 }
