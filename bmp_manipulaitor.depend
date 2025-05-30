@@ -22,7 +22,7 @@
 	"funciones_grupo.h"
 	"funciones_zapata.h"
 
-1748491228 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.h
+1748547143 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.h
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -34,6 +34,6 @@
 1748490985 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.h
 	"funciones_grupo.h"
 
-1748493051 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.c
+1748547226 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.c
 	"funciones_zapata.h"
 

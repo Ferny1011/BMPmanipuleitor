@@ -27,11 +27,11 @@ typedef struct __attribute__((packed)) {
     uint32_t contadorColores;
 }BmpHeader;
 
-typedef struct {
+typedef struct{
     uint8_t b, g, r;
 }PixelRGB;
 
-typedef enum {
+typedef enum{
     OP_NONE = 0,
     OP_ACHICAR,
     OP_ROTAR_DERECHA,
@@ -50,13 +50,13 @@ typedef enum {
     OP_NEGATIVO
 }TipoOperacion;
 
-typedef struct {
+typedef struct{
     TipoOperacion operacion;
     int valor;
     bool activo;
 }OperacionImagen;
 
-typedef struct {
+typedef struct{
     OperacionImagen operaciones[16];
     int numOperaciones;
     char* imgFiles[2];
