@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <math.h>
-
+//TODO (Santiago#1#05/29/25): Aplicar paradigmas de TDA a las estructuras 
 typedef struct __attribute__((packed)) {
     char firma[2];
     uint32_t tamArchivo;
@@ -65,4 +65,8 @@ typedef struct {
 
 void ejecutarOperaciones(OpcionesImagen *opciones);
 
+// Funciones auxiliares
+void generarNombreArchivo(const char* archivoOriginal, TipoOperacion operacion, char* nombreSalida);
+const char* obtenerNombreOperacion(TipoOperacion operacion);
+void mostrarError(const char* mensaje);
 #endif // FUNCIONES_GRUPO_H
