@@ -63,4 +63,6 @@ typedef struct {
     int cantImg;
 }OpcionesImagen;
 
+void ejecutarOperaciones(OpcionesImagen *opciones);
+
 #endif // FUNCIONES_GRUPO_H

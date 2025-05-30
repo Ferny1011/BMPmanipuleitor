@@ -37,3 +37,28 @@
 1748493051 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.c
 	"funciones_zapata.h"
 
+1748556870 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_grupo.c
+	"funciones_grupo.h"
+	"funciones_zapata.h"
+
+1748556870 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_grupo.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<stdbool.h>
+	<stdint.h>
+	<math.h>
+
+1748556870 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_zapata.h
+	"funciones_grupo.h"
+
+1748556631 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_zapata.c
+	"funciones_zapata.h"
+
+1748562622 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_quiroga.c
+	"funciones_quiroga.h"
+
+1748560529 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_quiroga.h
+	"funciones_grupo.h"
+
