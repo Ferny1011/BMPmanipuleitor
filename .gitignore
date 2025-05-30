@@ -1,7 +1,5 @@
 tests/
-resources/
 .vscode/
 bin/
 obj/
-build.sh
 *.bmp
