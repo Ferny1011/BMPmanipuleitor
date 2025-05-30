@@ -128,7 +128,7 @@ void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor){
 
 void mostrarAyuda(){
     printf("=== BMP manipuleitor - Ayuda ===\n\n"
-           "Uso: bmpmanipulaitor <imagen_entrada> [imagen_adicional] [opciones]\n\n"
+           "Uso: bmpmanipuleitor <imagen_entrada> [imagen_adicional] [opciones]\n\n"
            "Archivos:\n"
            "  imagen_entrada     Archivo BMP de entrada (requerido, primer argumento)\n"
            "  imagen_adicional   Segunda imagen BMP para concatenacion (opcional)\n\n"

@@ -12,7 +12,7 @@ CC=gcc
 CFLAGS="-Wall -Wextra -std=c99 -g -O2"
 LDFLAGS="-lm"
 SOURCES="funciones_grupo.c funciones_zapata.c funciones_quiroga.c"
-EXECUTABLE="bmp_manipulaitor"
+EXECUTABLE="bmp_manipuleitor"
 BINDIR="bin"
 
 # Create bin directory if it doesn't exist
