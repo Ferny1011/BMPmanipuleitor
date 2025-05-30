@@ -98,25 +98,79 @@ void cambioContraste(PixelRGB *pixels, const BmpHeader *imgHeader, int contraste
     }
 }
 
+void cambioNegativo(PixelRGB *pixels, const BmpHeader *imgHeader){
+    for ( int i = 0; i < imgHeader->anchura * imgHeader->altura; i++ ){
+        pixels[i].r = 255 - pixels[i].r;
+        pixels[i].g = 255 - pixels[i].g;
+        pixels[i].b = 255 - pixels[i].b;
+    }
+}
+
 void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor){
+    // Verificar si la operación ya está agregada
+    for(int i = 0; i < opciones->numOperaciones; i++) {
+        if(opciones->operaciones[i].operacion == op) {
+            printf("Advertencia: La operacion '%s' ya fue especificada. Se ignora la duplicada.\n", 
+                   obtenerNombreOperacion(op));
+            return;
+        }
+    }
+    
     if ( opciones->numOperaciones < 16 ){
         opciones->operaciones[opciones->numOperaciones].operacion = op;
         opciones->operaciones[opciones->numOperaciones].valor = valor;
         opciones->operaciones[opciones->numOperaciones].activo = true;
         opciones->numOperaciones++;
+    } else {
+        printf("Error: Se alcanzo el maximo numero de operaciones (16).\n");
     }
 }
 
-void parse_argv(int argc, char* argv[], OpcionesImagen *opciones){
-    opciones->numOperaciones = 0;
-    opciones->cantImg = 0;
-    int valor;
-    char *currArgv, *equalPos;
+void mostrarAyuda(){
+    printf("=== BMP manipuleitor - Ayuda ===\n\n"
+           "Uso: bmpmanipulaitor <imagen_entrada> [imagen_adicional] [opciones]\n\n"
+           "Archivos:\n"
+           "  imagen_entrada     Archivo BMP de entrada (requerido, primer argumento)\n"
+           "  imagen_adicional   Segunda imagen BMP para concatenacion (opcional)\n\n"
+           "Opciones disponibles:\n"
+           "  --escala-de-grises           Convierte a escala de grises\n"
+           "  --rotar-derecha              Rota 90 grados a la derecha\n"
+           "  --rotar-izquierda            Rota 90 grados a la izquierda\n"
+           "  --negativo                   Invierte los colores\n"
+           "  --espejar-horizontal         Espeja horizontalmente\n"
+           "  --espejar-vertical           Espeja verticalmente\n"
+           "  --concatenar-horizontal      Concatena dos imagenes horizontalmente (requiere 2 imagenes)\n"
+           "  --concatenar-vertical        Concatena dos imagenes verticalmente (requiere 2 imagenes)\n\n"
+           "Opciones con valores (formato: --opcion=valor):\n"
+           "  --tonalidad-azul[=%%]        Ajusta tonalidad azul (defecto: 10)\n"
+           "  --tonalidad-roja[=%%]        Ajusta tonalidad roja (defecto: 10)\n"
+           "  --tonalidad-verde[=%%]       Ajusta tonalidad verde (defecto: 10)\n"
+           "  --aumentar-contraste[=%%]    Aumenta el contraste (defecto: 20)\n"
+           "  --disminuir-contraste[=%%]   Disminuye el contraste (defecto: 20)\n"
+           "  --recortar[=%%]              Recorta la imagen (defecto: 10)\n"
+           "  --achicar[=factor]           Achica la imagen (defecto: 2)\n\n"
+           "  --help, -h                   Muestra esta ayuda\n\n"           "Comportamiento:\n"
+           "  - Cada operacion genera un archivo separado: LUMEN_<operacion>_<imagen>.bmp\n"
+           "  - Las operaciones duplicadas se ejecutan solo una vez\n"
+           "  - Los argumentos incorrectos se ignoran con advertencia\n"
+           "  - Si una operacion falla, se continua con las demas\n"
+           "  - Las operaciones se procesan en el orden especificado\n\n"
+           "Ejemplos:\n"
+           "  bmpmanipuleitor.exe unlam.bmp --negativo --escala-de-grises\n"
+           "    Genera: LUMEN_negativo_unlam.bmp, LUMEN_escala-de-grises_unlam.bmp\n\n"
+           "  bmpmanipuleitor.exe imagen.bmp --aumentar-contraste=18 --tonalidad-azul=5\n"
+           "    Genera: LUMEN_aumentar-contraste_imagen.bmp, LUMEN_tonalidad-azul_imagen.bmp\n\n"
+           "  bmpmanipuleitor.exe img1.bmp img2.bmp --concatenar-vertical\n"
+           "    Genera: LUMEN_concatenar-vertical_img1.bmp\n\n");
+}
 
+void parse_argv(int argc, char* argv[], OpcionesImagen *opciones) {
+    int valor = -1;
+    char* argumentoActual = NULL, *equalPos = NULL;
     for(int i = 1; i < argc; i++) {
-        currArgv = argv[i];
+        argumentoActual = argv[i];
 
-        equalPos = strchr(currArgv, '=');
+        equalPos = strchr(argumentoActual, '=');
         valor = -1;
 
         if(equalPos != NULL) {
@@ -124,61 +178,110 @@ void parse_argv(int argc, char* argv[], OpcionesImagen *opciones){
             valor = atoi(equalPos + 1);
         }
 
-        if(!strcmp(currArgv,"--escala-de-grises")) {
+        if(!strcmp(argumentoActual, "--escala-de-grises")) {
             agregarOperacion(opciones, OP_ESCALA_GRISES, valor);
         }
-        else if(!strcmp(currArgv,"--rotar-derecha")) {
+        else if(!strcmp(argumentoActual, "--rotar-derecha")) {
             agregarOperacion(opciones, OP_ROTAR_DERECHA, valor);
         }
-        else if(!strcmp(currArgv,"--rotar-izquierda")) {
+        else if(!strcmp(argumentoActual, "--rotar-izquierda")) {
             agregarOperacion(opciones, OP_ROTAR_IZQUIERDA, valor);
         }
-        else if(!strcmp(currArgv, "--tonalidad-azul")) {
-            agregarOperacion(opciones, OP_TONALIDAD_AZUL, valor);
+        else if(!strcmp(argumentoActual, "--tonalidad-azul")) {
+            agregarOperacion(opciones, OP_TONALIDAD_AZUL, valor == -1 ? 10 : valor);
         }
-        else if(!strcmp(currArgv, "--aumentar-contraste")) {
-            agregarOperacion(opciones, OP_AUMENTAR_CONTRASTE, valor);
+        else if(!strcmp(argumentoActual, "--tonalidad-roja")) {
+            agregarOperacion(opciones, OP_TONALIDAD_ROJA, valor == -1 ? 10 : valor);
         }
-        else if(!strcmp(currArgv, "--disminuir-contraste")) {
-            agregarOperacion(opciones, OP_DISMINUIR_CONTRASTE, valor);
+        else if(!strcmp(argumentoActual, "--tonalidad-verde")) {
+            agregarOperacion(opciones, OP_TONALIDAD_VERDE, valor == -1 ? 10 : valor);
         }
-        else if(!strcmp(currArgv, "--tonalidad-roja")) {
-            agregarOperacion(opciones, OP_TONALIDAD_ROJA, valor);
+        else if(!strcmp(argumentoActual, "--aumentar-contraste")) {
+            agregarOperacion(opciones, OP_AUMENTAR_CONTRASTE, valor == -1 ? 20 : valor);
         }
-        else if(!strcmp(currArgv, "--tonalidad-verde")) {
-            agregarOperacion(opciones, OP_TONALIDAD_VERDE, valor);
+        else if(!strcmp(argumentoActual, "--disminuir-contraste")) {
+            agregarOperacion(opciones, OP_DISMINUIR_CONTRASTE, valor == -1 ? 20 : valor);
         }
-        else if(!strcmp(currArgv, "--recortar")) {
-            agregarOperacion(opciones, OP_RECORTAR, valor);
+        else if(!strcmp(argumentoActual, "--recortar")) {
+            agregarOperacion(opciones, OP_RECORTAR, valor == -1 ? 100 : valor);
         }
-        else if(!strcmp(currArgv, "--negativo")) {
+        else if(!strcmp(argumentoActual, "--negativo")) {
             agregarOperacion(opciones, OP_NEGATIVO, valor);
         }
-        else if(!strcmp(currArgv, "--achicar")) {
-            agregarOperacion(opciones, OP_ACHICAR, valor);
+        else if(!strcmp(argumentoActual, "--achicar")) {
+            agregarOperacion(opciones, OP_ACHICAR, valor == -1 ? 2 : valor);
         }
-        else if(!strcmp(currArgv, "--espejar-horizontal")) {
+        else if(!strcmp(argumentoActual, "--espejar-horizontal")) {
             agregarOperacion(opciones, OP_ESPEJAR_HORIZONTAL, valor);
         }
-        else if(!strcmp(currArgv, "--espejar-vertical")) {
+        else if(!strcmp(argumentoActual, "--espejar-vertical")) {
             agregarOperacion(opciones, OP_ESPEJAR_VERTICAL, valor);
         }
-        else if(!strcmp(currArgv, "--concatenar-horizontal")) {
+        else if(!strcmp(argumentoActual, "--concatenar-horizontal")) {
             agregarOperacion(opciones, OP_CONCATENAR_HORIZONTAL, valor);
         }
-        else if(!strcmp(currArgv, "--concatenar-vertical")) {
+        else if(!strcmp(argumentoActual, "--concatenar-vertical")) {
             agregarOperacion(opciones, OP_CONCATENAR_VERTICAL, valor);
         }
-        else if(*(currArgv)!='-') {
+        else if(argumentoActual[0] != '-') {
             if(opciones->cantImg < 2) {
-                opciones->imgFiles[opciones->cantImg] = currArgv;
+                opciones->imgFiles[opciones->cantImg] = argumentoActual;
                 opciones->cantImg++;
             } else {
-                fprintf(stderr, "Error: Too many image files specified.\n");
-                exit(EXIT_FAILURE);
+                printf("Advertencia: Se ignoro el archivo adicional '%s'. Maximo 2 archivos permitidos.\n", argumentoActual);
             }
         }
-//        if(equalPos != NULL)
-//            *equalPos = '=';
+        else {
+            printf("Advertencia: Argumento desconocido '%s' ignorado.\n", argumentoActual);
+        }
+    }
+}
+
+
+bool requiereSegundaImagen(TipoOperacion operacion) {
+    switch(operacion) {
+        case OP_CONCATENAR_VERTICAL:
+        case OP_CONCATENAR_HORIZONTAL:
+            return true;
+        default:
+            return false;
+    }
+}
+
+void generarNombreArchivo(const char* archivoOriginal, TipoOperacion operacion, char* nombreSalida) {
+    char nombreBase[256];
+    char* soloNombre = NULL, *ultimaBarra = NULL, *ultimoPunto = NULL;
+    strcpy(nombreBase, archivoOriginal);
+    ultimoPunto = strrchr(nombreBase, '.');
+    ultimaBarra = strrchr(nombreBase, '\\');
+    if(ultimoPunto != NULL)
+        *ultimoPunto = '\0';
+
+    if(ultimaBarra == NULL)
+        ultimaBarra = strrchr(nombreBase, '/');
+
+    soloNombre = (ultimaBarra != NULL) ? ultimaBarra + 1 : nombreBase;
+
+    sprintf(nombreSalida, "%s_%s_%s.bmp", NOMBRE_GRUPO, obtenerNombreOperacion(operacion), soloNombre);
+}
+
+const char* obtenerNombreOperacion(TipoOperacion operacion) {
+    switch(operacion) {
+        case OP_ESCALA_GRISES: return "escala-de-grises";
+        case OP_NEGATIVO: return "negativo";
+        case OP_TONALIDAD_AZUL: return "tonalidad-azul";
+        case OP_TONALIDAD_ROJA: return "tonalidad-roja";
+        case OP_TONALIDAD_VERDE: return "tonalidad-verde";
+        case OP_AUMENTAR_CONTRASTE: return "aumentar-contraste";
+        case OP_DISMINUIR_CONTRASTE: return "disminuir-contraste";
+        case OP_ROTAR_DERECHA: return "rotar-derecha";
+        case OP_ROTAR_IZQUIERDA: return "rotar-izquierda";
+        case OP_RECORTAR: return "recortar";
+        case OP_ACHICAR: return "achicar";
+        case OP_ESPEJAR_HORIZONTAL: return "espejar-horizontal";
+        case OP_ESPEJAR_VERTICAL: return "espejar-vertical";
+        case OP_CONCATENAR_HORIZONTAL: return "concatenar-horizontal";
+        case OP_CONCATENAR_VERTICAL: return "concatenar-vertical";
+        default: return "desconocida";
     }
 }
