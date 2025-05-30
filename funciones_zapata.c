@@ -82,6 +82,22 @@ void cambioTonalidad(PixelRGB *pixels, const BmpHeader *imgHeader, float rojo, f
     }
 }
 
+uint8_t _adjustContrast(uint8_t pixel, float factor) {
+    int newPixel = (int)(factor * (pixel - 128) + 128);
+    if (newPixel < 0) newPixel = 0;
+    if (newPixel > 255) newPixel = 255;
+    return (uint8_t)newPixel;
+}
+
+void cambioContraste(PixelRGB *pixels, const BmpHeader *imgHeader, int contraste){
+    float factor = (259.0 * (contraste + 255.0)) / (255.0 * (259.0 - contraste));
+    for ( int i = 0; i < imgHeader->anchura * imgHeader->altura; i++ ){
+        pixels[i].r = _adjustContrast(pixels[i].r, factor);
+        pixels[i].g = _adjustContrast(pixels[i].g, factor);
+        pixels[i].b = _adjustContrast(pixels[i].b, factor);
+    }
+}
+
 void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor){
     if ( opciones->numOperaciones < 16 ){
         opciones->operaciones[opciones->numOperaciones].operacion = op;
@@ -162,10 +178,7 @@ void parse_argv(int argc, char* argv[], OpcionesImagen *opciones){
                 exit(EXIT_FAILURE);
             }
         }
-        if(equalPos != NULL) {
-            *equalPos = '=';
-        }
+//        if(equalPos != NULL)
+//            *equalPos = '=';
     }
 }
-
-

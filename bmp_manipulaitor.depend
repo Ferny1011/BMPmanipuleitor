@@ -1,28 +1,9 @@
 # depslib dependency file v1.0
-1748097258 source:c:\users\laboratorios\desktop\bmp\bmpmanipuleitor\bmp_manipulaitor\funciones_grupo.c
+1748565950 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.c
 	"funciones_grupo.h"
 	"funciones_zapata.h"
 
-1748088799 c:\users\laboratorios\desktop\bmp\bmpmanipuleitor\bmp_manipulaitor\funciones_grupo.h
-	<stdio.h>
-	<stdlib.h>
-
-1748097156 source:c:\users\laboratorios\desktop\bmp\bmpmanipuleitor\bmp_manipulaitor\funciones_zapata.c
-	"funciones_zapata.h"
-
-1748097311 c:\users\laboratorios\desktop\bmp\bmpmanipuleitor\bmp_manipulaitor\funciones_zapata.h
-	<stdio.h>
-	<stdlib.h>
-	<string.h>
-	<ctype.h>
-	<stdbool.h>
-	<stdint.h>
-
-1748490641 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.c
-	"funciones_grupo.h"
-	"funciones_zapata.h"
-
-1748491228 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.h
+1748565950 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.h
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -31,34 +12,15 @@
 	<stdint.h>
 	<math.h>
 
-1748490985 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.h
+1748565950 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.h
 	"funciones_grupo.h"
 
-1748493051 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.c
-	"funciones_zapata.h"
-
-1748556870 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_grupo.c
-	"funciones_grupo.h"
-	"funciones_zapata.h"
-
-1748556870 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_grupo.h
-	<stdio.h>
-	<stdlib.h>
-	<string.h>
-	<ctype.h>
-	<stdbool.h>
-	<stdint.h>
-	<math.h>
-
-1748556870 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_zapata.h
-	"funciones_grupo.h"
-
-1748556631 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_zapata.c
-	"funciones_zapata.h"
-
-1748563961 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_quiroga.c
+1748566129 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_quiroga.c
 	"funciones_quiroga.h"
 
-1748560529 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_quiroga.h
+1748565950 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_quiroga.h
 	"funciones_grupo.h"
+
+1748566102 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.c
+	"funciones_zapata.h"
 
