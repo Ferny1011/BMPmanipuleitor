@@ -2,7 +2,7 @@
 
 
 void concatenarImagenVertical (PixelRGB *imagenSuperior, const BmpHeader *imgSuperiorHeader,PixelRGB *imagenInferior, const BmpHeader *imgInferiorHeader){
-    FILE *outputFile = fopen("resources/concatenada.bmp", "wb");
+    FILE *outputFile = fopen("LUMEN_concatenar_vertical.bmp", "wb");
     char *paddingBytes = NULL;
     int i, paddedRowSize, pixelOffset;
     BmpHeader imgHeader;
