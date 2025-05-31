@@ -22,6 +22,7 @@ int leerImagen(const char *fileName, PixelRGB **pixels, BmpHeader *imgHeader)
 {
     uint32_t i = 0;
     FILE *imgFile = fopen(fileName, "rb");
+    int tamFilaConPadding;
     if (!imgFile)
     {
         printf("Error al abrir el archivo %s", fileName);
@@ -35,17 +36,15 @@ int leerImagen(const char *fileName, PixelRGB **pixels, BmpHeader *imgHeader)
         fclose(imgFile);
         return 0;
     }
-    int tamFilaConPadding = (int)(4 * ceil((float)(imgHeader->anchura) / 4.0f)) * (imgHeader->profundidad / 8);
-    int totalPixels = imgHeader->anchura * imgHeader->altura;
-    *pixels = (PixelRGB *)malloc(totalPixels * sizeof(PixelRGB));
-    if (*pixels == NULL)
+    tamFilaConPadding = (int)(4 * ceil((float)(imgHeader->anchura) / 4.0f)) * (imgHeader->profundidad / 8);
+    
+    if (!reservarPixels(pixels, imgHeader->anchura, imgHeader->altura))
     {
-        puts("Error al asignar memoria para cargar imagen\n");
+        printf("Error al reservar memoria para los pixels\n");
         fclose(imgFile);
         return 0;
     }
 
-    // PixelRGB *currentRowPointer = *pixels+((imgHeader->altura - 1) * imgHeader->anchura);
     PixelRGB *currentRowPointer = *pixels;
     for (i = 0; i < imgHeader->altura; i++)
     {
@@ -80,12 +79,13 @@ void espejarVertical(PixelRGB *pixels, const BmpHeader *imgHeader)
 {
     // Espejar verticalmente la imagen, guardando las filas en orden inverso
     int i, tamLinea = imgHeader->anchura * sizeof(PixelRGB);
-    PixelRGB *tempLinea = (PixelRGB *)malloc(tamLinea);
-    if (tempLinea == NULL)
+    PixelRGB *tempLinea;
+    if(!reservarPixels(&tempLinea, imgHeader->anchura, 1))
     {
-        puts("Error al asignar memoria para el espejado vertical.");
+        puts("Error al reservar memoria para el buffer temporal.");
         return;
     }
+    
     for (i = 0; i < imgHeader->altura / 2; i++)
     {
         // Copiar la fila actual al buffer temporal
@@ -145,6 +145,10 @@ void espejarHorizontal(PixelRGB *pixels, const BmpHeader *imgHeader)
 //    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
 //                                                <---
 
+void rotarDerecha(PixelRGB *pixels, BmpHeader *imgHeader)
+{
+    
+}
 
 void convertirEscalaDeGrises(PixelRGB *pixels, const BmpHeader *imgHeader)
 {
@@ -212,7 +216,6 @@ void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor)
     {
         opciones->operaciones[opciones->numOperaciones].operacion = op;
         opciones->operaciones[opciones->numOperaciones].valor = valor;
-        opciones->operaciones[opciones->numOperaciones].activo = true;
         opciones->numOperaciones++;
     }
     else

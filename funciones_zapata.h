@@ -22,6 +22,7 @@ void cambioContraste(PixelRGB *pixels, const BmpHeader *imgHeader, int contraste
 int _adjustContrast(uint8_t pixel, float factor);
 void espejarVertical(PixelRGB *pixels, const BmpHeader *imgHeader);
 void espejarHorizontal(PixelRGB *pixels, const BmpHeader *imgHeader);
+void rotarDerecha(PixelRGB *pixels, BmpHeader *imgHeader);
 
 
 
