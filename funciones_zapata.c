@@ -18,7 +18,8 @@ void testHeader(BmpHeader *cabecera){
 // TODO (Santiago#1#05/29/25): pasar los pixels ya reservados, evitar memory leaks
 
 int leerImagen(const char *fileName, PixelRGB **pixels, BmpHeader *imgHeader){
-	FILE *imgFile = fopen(fileName, "rb");
+	uint32_t i = 0;
+    FILE *imgFile = fopen(fileName, "rb");
 	if (!imgFile){
 		printf("Error al leer el archivo %s", fileName);
 		return 0;
@@ -38,27 +39,29 @@ int leerImagen(const char *fileName, PixelRGB **pixels, BmpHeader *imgHeader){
 		fclose(imgFile);
 		return 0;
 	}
-	int i = 0;
-	PixelRGB *currentRowPointer = *pixels+((imgHeader->altura - 1) * imgHeader->anchura);
+	
+	//PixelRGB *currentRowPointer = *pixels+((imgHeader->altura - 1) * imgHeader->anchura);
+    PixelRGB *currentRowPointer = *pixels;
 	for (i = 0; i < imgHeader->altura; i++) {
 		fseek(imgFile, imgHeader->dataOffset + (i * tamFilaConPadding), SEEK_SET);
 		fread(currentRowPointer, sizeof(PixelRGB), imgHeader->anchura, imgFile);
-		currentRowPointer -= imgHeader->anchura;
+		currentRowPointer += imgHeader->anchura;
 	}
 	fclose(imgFile);
 	return 1;
 }
 
 void WriteImage(const char *fileName, PixelRGB *pixels, BmpHeader imgHeader){
-	FILE *outputFile = fopen(fileName, "wb");
+	int i;
+    FILE *outputFile = fopen(fileName, "wb");
 	int paddedRowSize = (int)(4 * ceil((float)(imgHeader.anchura) / 4.0f)) * (imgHeader.profundidad / 8);
 	fwrite(&imgHeader, sizeof(BmpHeader), 1, outputFile);
 	fseek(outputFile, imgHeader.dataOffset, SEEK_SET);
 
 	char *paddingBytes = (char*)calloc(paddedRowSize, 1);
-	for (int i = 0; i < imgHeader.altura; i++) {
-		int pixelOffset = ((imgHeader.altura - i) - 1) * imgHeader.anchura;
-		memcpy(paddingBytes, &pixels[pixelOffset], imgHeader.anchura * sizeof(PixelRGB));
+	for (i = 0; i < imgHeader.altura; i++) {
+		//int pixelOffset = ((imgHeader.altura - i) - 1) * imgHeader.anchura;  // leemos la imagen tal cual está en el archivo
+		memcpy(paddingBytes, &pixels[/*pixelOffset*/ (i * imgHeader.anchura)], imgHeader.anchura * sizeof(PixelRGB));
 		fwrite(paddingBytes, 1, paddedRowSize, outputFile);
 	}
 	free(paddingBytes);
@@ -66,8 +69,9 @@ void WriteImage(const char *fileName, PixelRGB *pixels, BmpHeader imgHeader){
 }
 
 void convertirEscalaDeGrises(PixelRGB *pixels, const BmpHeader *imgHeader){
-    for ( int i = 0; i < imgHeader->anchura * imgHeader->altura; i++ ){
-        uint8_t gray = (uint8_t)(0.299 * pixels[i].r + 0.587 * pixels[i].g + 0.114 * pixels[i].b);
+    int i, gray;
+    for ( i = 0; i < imgHeader->anchura * imgHeader->altura; i++ ){
+        gray = (int)(0.299 * pixels[i].r + 0.587 * pixels[i].g + 0.114 * pixels[i].b);
         pixels[i].r = gray;
         pixels[i].g = gray;
         pixels[i].b = gray;
@@ -82,16 +86,18 @@ void cambioTonalidad(PixelRGB *pixels, const BmpHeader *imgHeader, float rojo, f
     }
 }
 
-uint8_t _adjustContrast(uint8_t pixel, float factor) {
+int _adjustContrast(uint8_t pixel, float factor) {
     int newPixel = (int)(factor * (pixel - 128) + 128);
-    if (newPixel < 0) newPixel = 0;
-    if (newPixel > 255) newPixel = 255;
-    return (uint8_t)newPixel;
+    // if (newPixel < 0) newPixel = 0;
+    // if (newPixel > 255) newPixel = 255;
+    newPixel = (newPixel < 0 || newPixel > 255) ? (newPixel < 0 ? 0 : 255) : newPixel;
+    return (int)newPixel;
 }
 
 void cambioContraste(PixelRGB *pixels, const BmpHeader *imgHeader, int contraste){
     float factor = (259.0 * (contraste + 255.0)) / (255.0 * (259.0 - contraste));
-    for ( int i = 0; i < imgHeader->anchura * imgHeader->altura; i++ ){
+    int i;
+    for ( i = 0; i < imgHeader->anchura * imgHeader->altura; i++ ){
         pixels[i].r = _adjustContrast(pixels[i].r, factor);
         pixels[i].g = _adjustContrast(pixels[i].g, factor);
         pixels[i].b = _adjustContrast(pixels[i].b, factor);
@@ -110,8 +116,7 @@ void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor){
     // Verificar si la operación ya está agregada
     for(int i = 0; i < opciones->numOperaciones; i++) {
         if(opciones->operaciones[i].operacion == op) {
-            printf("Advertencia: La operacion '%s' ya fue especificada. Se ignora la duplicada.\n", 
-                   obtenerNombreOperacion(op));
+            printf("Advertencia: La operacion '%s' ya fue especificada. Se ignora la duplicada.\n", obtenerNombreOperacion(op));
             return;
         }
     }
@@ -129,6 +134,7 @@ void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor){
 void mostrarAyuda(){
     printf("=== BMP manipuleitor - Ayuda ===\n\n"
            "Uso: bmpmanipuleitor <imagen_entrada> [imagen_adicional] [opciones]\n\n"
+           "Los argumentos pueden ser ingresados en cualquier orden.\n"
            "Archivos:\n"
            "  imagen_entrada     Archivo BMP de entrada (requerido, primer argumento)\n"
            "  imagen_adicional   Segunda imagen BMP para concatenacion (opcional)\n\n"
@@ -236,7 +242,6 @@ void parse_argv(int argc, char* argv[], OpcionesImagen *opciones) {
         }
     }
 }
-
 
 bool requiereSegundaImagen(TipoOperacion operacion) {
     switch(operacion) {

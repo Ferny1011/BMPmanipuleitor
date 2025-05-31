@@ -76,14 +76,17 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
     }
 
     for(int i = 0; i < opciones->numOperaciones; i++) {
-        if(!opciones->operaciones[i].activo) continue;
+        //if(!opciones->operaciones[i].activo) continue;
         memcpy(imagenCopia, imagenOriginal, totalPixelsBlock);
         
-        // Aplicar la operación
         printf("Aplicando operacion: %s", obtenerNombreOperacion(opciones->operaciones[i].operacion));
-        if(opciones->operaciones[i].valor != -1)
-            printf(" (valor: %d\n)", opciones->operaciones[i].valor);
-        
+        if(opciones->operaciones[i].valor != -1){
+            printf(" (valor: %d)\n", opciones->operaciones[i].valor);
+            if(opciones->operaciones[i].valor > 100 || opciones->operaciones[i].valor < 0) {
+                puts("Error: El valor de la operacion debe estar en el rango [0, 100]. No se generara la imagen.");
+                continue;
+            }
+        }
         switch(opciones->operaciones[i].operacion) {
             case OP_ESCALA_GRISES:
                 convertirEscalaDeGrises(imagenCopia, &headerOriginal);
@@ -108,7 +111,7 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
                 break;
             case OP_CONCATENAR_VERTICAL:
                 if(opciones->cantImg < 2) {
-                    printf("Error: Se requiere una segunda imagen para la operación de concatenación vertical.\n");
+                    puts("Error: Se requiere una segunda imagen para la operación de concatenación vertical.");
                     continue;
                 }
                 concatenarImagenVertical(imagenCopia, &headerOriginal, imagen2, &header2);
@@ -139,6 +142,9 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
     }
     free(imagenCopia);
     free(imagenOriginal);
+    if(imagen2) {
+        free(imagen2);
+    }
     printf("\nProcesamiento completado.\n");
 }
 

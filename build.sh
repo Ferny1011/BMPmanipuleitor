@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 CC=gcc
-CFLAGS="-Wall -Wextra -std=c99 -g -O2"
+CFLAGS="-Wall -Wextra -std=c99 -g -O2 -Wno-sign-compare"
 LDFLAGS="-lm"
 SOURCES="funciones_grupo.c funciones_zapata.c funciones_quiroga.c"
 EXECUTABLE="bmp_manipuleitor"

@@ -36,6 +36,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="funciones_grupo.h" />
+		<Unit filename="funciones_quiroga.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="funciones_quiroga.h" />
 		<Unit filename="funciones_zapata.c">
 			<Option compilerVar="CC" />
 		</Unit>
