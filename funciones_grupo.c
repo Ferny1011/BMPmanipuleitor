@@ -116,12 +116,16 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
                 }
                 concatenarImagenVertical(imagenCopia, &headerOriginal, imagen2, &header2);
                 break;
+            case OP_ESPEJAR_VERTICAL:
+                espejarVertical(imagenCopia, &headerOriginal);
+                break;
+            case OP_ESPEJAR_HORIZONTAL:
+                espejarHorizontal(imagenCopia, &headerOriginal);
+                break;
             case OP_ROTAR_DERECHA:
             case OP_ROTAR_IZQUIERDA:
             case OP_RECORTAR:
             case OP_ACHICAR:
-            case OP_ESPEJAR_HORIZONTAL:
-            case OP_ESPEJAR_VERTICAL:
             case OP_CONCATENAR_HORIZONTAL:
                 printf("Error: La operacion '%s' aún no esta implementada.\n", 
                 obtenerNombreOperacion(opciones->operaciones[i].operacion));

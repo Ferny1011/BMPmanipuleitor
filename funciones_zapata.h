@@ -20,6 +20,8 @@ void generarNombreArchivo(const char* archivoOriginal, TipoOperacion operacion, 
 const char* obtenerNombreOperacion(TipoOperacion operacion);
 void cambioContraste(PixelRGB *pixels, const BmpHeader *imgHeader, int contraste);
 int _adjustContrast(uint8_t pixel, float factor);
+void espejarVertical(PixelRGB *pixels, const BmpHeader *imgHeader);
+void espejarHorizontal(PixelRGB *pixels, const BmpHeader *imgHeader);
 
 
 
