@@ -299,7 +299,7 @@ void parse_argv(int argc, char *argv[], OpcionesImagen *opciones)
         else if (!strcmp(argumentoActual, "--disminuir-contraste"))
             agregarOperacion(opciones, OP_DISMINUIR_CONTRASTE, valor == -1 ? 20 : valor);
         else if (!strcmp(argumentoActual, "--recortar"))
-            agregarOperacion(opciones, OP_RECORTAR, valor == -1 ? 100 : valor);
+            agregarOperacion(opciones, OP_RECORTAR, valor == -1 ? 10 : valor);
         else if (!strcmp(argumentoActual, "--negativo"))
             agregarOperacion(opciones, OP_NEGATIVO, valor);
         else if (!strcmp(argumentoActual, "--achicar"))
