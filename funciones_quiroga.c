@@ -45,3 +45,4 @@ void concatenarImagenVertical (PixelRGB *imagenSuperior, const BmpHeader *imgSup
 	free(paddingBytes);
 	fclose(outputFile);
 }
+

@@ -7,7 +7,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <math.h>
-#include "lib/TDAPixel.h"
 #include "lib/TDAImagenBMP.h"
 //TODO (Santiago#1#05/29/25): Aplicar paradigmas de TDA a las estructuras 
 
