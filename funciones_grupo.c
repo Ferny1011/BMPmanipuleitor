@@ -33,9 +33,7 @@ int main(int argc, char* argv[]){
 
 void ejecutarOperaciones(OpcionesImagen *opciones){
     char nombreSalida[256];
-    int totalPixelsBlock;
-    PixelRGB *imagenOriginal = NULL, *imagenCopia = NULL, *imagen2 = NULL;
-    BmpHeader headerOriginal, header2, headerCopia;
+    TDA_ImagenBMP *imagenOriginal = NULL, *imagenCopia = NULL, *imagen2 = NULL;
     if(opciones->cantImg == 0) {
         printf("Error: No se especifico ningun archivo de imagen.\n");
         return;
@@ -46,38 +44,37 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
         return;
     }
 
-    if(!leerImagen(opciones->imgFiles[0], &imagenOriginal, &headerOriginal)) {
-        printf("Error: No se pudo leer el archivo '%s'.\n", opciones->imgFiles[0]);
+    imagenOriginal = crearImagenBMP(opciones->imgFiles[0]);
+    if(!imagenOriginal) {
+        printf("Error: No se pudo cargar la imagen '%s'.\n", opciones->imgFiles[0]);
         return;
     }
     
     printf("Imagen cargada: %s (%dx%d)\n", opciones->imgFiles[0], 
-           headerOriginal.anchura, headerOriginal.altura);
-    totalPixelsBlock = headerOriginal.anchura * headerOriginal.altura * sizeof(PixelRGB);
+           imagenOriginal->cabecera.anchura, imagenOriginal->cabecera.altura);
     
     if(opciones->cantImg > 1) {
-        if(!leerImagen(opciones->imgFiles[1], &imagen2, &header2)) {
-            printf("Error: No se pudo leer el archivo '%s'.\n", opciones->imgFiles[1]);
+        imagen2 = crearImagenBMP(opciones->imgFiles[1]);
+        if(!imagen2) {
+            printf("Error: No se pudo cargar la segunda imagen '%s'.\n", opciones->imgFiles[1]);
             free(imagenOriginal);
             return;
         }
         printf("Segunda imagen cargada: %s (%dx%d)\n", opciones->imgFiles[1], 
-               header2.anchura, header2.altura);
+               imagen2->cabecera.anchura, imagen2->cabecera.altura);
     }
     
     // Crear copia de la imagen original para cada operación, evitando sobrescribir la original
-    if(!reservarPixels(&imagenCopia, headerOriginal.anchura, headerOriginal.altura)){
-        printf("Error: No se pudo reservar memoria para la copia de la imagen.\n");
-        free(imagenOriginal);
-        if(imagen2) {
-            free(imagen2);
-        }
-        return;
-    }
+
 
     for(int i = 0; i < opciones->numOperaciones; i++) {
-        memcpy(imagenCopia, imagenOriginal, totalPixelsBlock);
-        headerCopia = headerOriginal;
+        imagenCopia = crearImagenBMP(opciones->imgFiles[0]);
+        if(!imagenCopia) {
+            printf("Error: No se pudo crear una copia de la imagen original para la operacion '%s'.\n", 
+                   obtenerNombreOperacion(opciones->operaciones[i].operacion));
+            continue;
+        }
+        //duplicarMatPixeles(imagenOriginal, imagenCopia);
         
         printf("Aplicando operacion: %s", obtenerNombreOperacion(opciones->operaciones[i].operacion));
         if(opciones->operaciones[i].valor != -1){
@@ -94,34 +91,34 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
         }
         switch(opciones->operaciones[i].operacion) {
             case OP_ESCALA_GRISES:
-                convertirEscalaDeGrises(imagenCopia, &headerCopia);
+                convertirEscalaDeGrises(imagenCopia);
                 break;
             case OP_TONALIDAD_AZUL:
-                cambioTonalidad(imagenCopia, &headerCopia, 1, 1, 1 + ((float) opciones->operaciones[i].valor / 100));
+                //cambioTonalidad(imagenCopia, &headerCopia, 1, 1, 1 + ((float) opciones->operaciones[i].valor / 100));
                 break;
             case OP_TONALIDAD_ROJA:
-                cambioTonalidad(imagenCopia, &headerCopia, 1 + ((float) opciones->operaciones[i].valor / 100), 1, 1);
+                //cambioTonalidad(imagenCopia, &headerCopia, 1 + ((float) opciones->operaciones[i].valor / 100), 1, 1);
                 break;
             case OP_TONALIDAD_VERDE:
-                cambioTonalidad(imagenCopia, &headerCopia, 1, 1 + ((float) opciones->operaciones[i].valor / 100), 1);
+                //cambioTonalidad(imagenCopia, &headerCopia, 1, 1 + ((float) opciones->operaciones[i].valor / 100), 1);
                 break;
             case OP_AUMENTAR_CONTRASTE:
-                cambioContraste(imagenCopia, &headerCopia, opciones->operaciones[i].valor);
+                //cambioContraste(imagenCopia, &headerCopia, opciones->operaciones[i].valor);
                 break;
             case OP_DISMINUIR_CONTRASTE:
-                cambioContraste(imagenCopia, &headerCopia, opciones->operaciones[i].valor * -1);
+                //cambioContraste(imagenCopia, &headerCopia, opciones->operaciones[i].valor * -1);
                 break;            
             case OP_NEGATIVO:
-                cambioNegativo(imagenCopia, &headerCopia);
+                //cambioNegativo(imagenCopia, &headerCopia);
                 break;
             case OP_CONCATENAR_VERTICAL:
-                concatenarImagenVertical(imagenCopia, &headerOriginal, imagen2, &header2);
+                imagenCopia = concatenarImagenVertical(imagenOriginal, imagen2);
                 break;
             case OP_ESPEJAR_VERTICAL:
-                espejarVertical(imagenCopia, &headerCopia);
+                //espejarVertical(imagenCopia, &headerCopia);
                 break;
             case OP_ESPEJAR_HORIZONTAL:
-                espejarHorizontal(imagenCopia, &headerCopia);
+                //espejarHorizontal(imagenCopia, &headerCopia);
                 break;
             case OP_ROTAR_DERECHA:
             case OP_ROTAR_IZQUIERDA:
@@ -136,14 +133,20 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
                 break;
         }
         
-        if(!requiereSegundaImagen(opciones->operaciones[i].operacion)) {
-            generarNombreArchivo(opciones->imgFiles[0], opciones->operaciones[i].operacion, nombreSalida);
-            WriteImage(nombreSalida, imagenCopia, headerCopia);
+        generarNombreArchivo(opciones->imgFiles[0], opciones->operaciones[i].operacion, nombreSalida);
+        if(guardarImagen(nombreSalida, imagenCopia)) {
             printf("\n\t-> Imagen guardada como: %s\n", nombreSalida);
         } else {
-            // Para operaciones que requieren una segunda imagen, la imagen se guarda en otro momento
-            continue;
+            printf("\nError al guardar la imagen procesada.\n");
         }
+        // if(!requiereSegundaImagen(opciones->operaciones[i].operacion)) {
+        //     generarNombreArchivo(opciones->imgFiles[0], opciones->operaciones[i].operacion, nombreSalida);
+        //     guardarImagen(nombreSalida, imagenCopia);
+        //     printf("\n\t-> Imagen guardada como: %s\n", nombreSalida);
+        // } else {
+        //     // Para operaciones que requieren una segunda imagen, la imagen se guarda en otro momento
+        //     continue;
+        // }
     }
     
     liberarPixels(&imagenOriginal);

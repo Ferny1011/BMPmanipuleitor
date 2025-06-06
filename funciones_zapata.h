@@ -6,9 +6,9 @@
 #define NOMBRE_GRUPO "LUMEN"
 
 typedef void(*printStruct)(const void*);
-int leerImagen(const char *fileName, PixelRGB **pixels, BmpHeader *imgHeader);
-void WriteImage(const char *fileName, PixelRGB *pixels, BmpHeader imgHeader);
-void convertirEscalaDeGrises(PixelRGB *pixels, const BmpHeader *imgHeader);
+
+int guardarImagen(const char *nombreArch, TDA_ImagenBMP *imagen);
+void convertirEscalaDeGrises(TDA_ImagenBMP *imagen);
 void cambioTonalidad(PixelRGB *imagenOriginal, const BmpHeader *imgHeader, float rojo, float verde, float azul);
 void cambioNegativo(PixelRGB *pixels, const BmpHeader *imgHeader);
 void testHeader(BmpHeader* h);

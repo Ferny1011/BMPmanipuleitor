@@ -1,26 +1,36 @@
 # depslib dependency file v1.0
-1748565950 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.c
+1749229393 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.c
 	"funciones_grupo.h"
 	"funciones_zapata.h"
+	"funciones_quiroga.h"
 
-1748565950 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.h
+1749221739 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_grupo.h
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
-	<ctype.h>
 	<stdbool.h>
 	<stdint.h>
 	<math.h>
+	"lib/TDAImagenBMP.h"
 
-1748565950 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.h
+1749229364 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.h
 	"funciones_grupo.h"
 
-1748566129 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_quiroga.c
+1749228872 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_quiroga.c
 	"funciones_quiroga.h"
 
-1748565950 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_quiroga.h
+1749228517 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_quiroga.h
 	"funciones_grupo.h"
 
-1748566102 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.c
+1749229383 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\funciones_zapata.c
 	"funciones_zapata.h"
+
+1749227331 c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\lib\tdaimagenbmp.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<stdint.h>
+
+1749229072 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\lib\tdaimagenbmp.c
+	"TDAImagenBMP.h"
 
