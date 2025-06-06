@@ -33,21 +33,20 @@ TDA_ImagenBMP *concatenarImagenVertical (TDA_ImagenBMP *imagenSuperior, TDA_Imag
         return NULL;
     }
     PixelRGB pixelVerde = {0, 255, 0};
-    for (i = 0; i < imagenSuperior->cabecera.altura; i++) {
+    for (i = 0; i < imagenInferior->cabecera.altura; i++) {
         for (j = 0; j < imagenConcatenada->cabecera.anchura; j++) {
-            if (j < imagenSuperior->cabecera.anchura)
-                imagenConcatenada->matrizDePixeles->data[i][j] = imagenSuperior->matrizDePixeles->data[i][j];
+            if (j < imagenInferior->cabecera.anchura)
+                imagenConcatenada->matrizDePixeles->data[i][j] = imagenInferior->matrizDePixeles->data[i][j];
             else
                 imagenConcatenada->matrizDePixeles->data[i][j] = pixelVerde;
         }
     }
-    
-    for (i = 0; i < imagenInferior->cabecera.altura; i++) {
+    for (i = 0; i < imagenSuperior->cabecera.altura; i++) {
         for (j = 0; j < imagenConcatenada->cabecera.anchura; j++) {
-            if (j < imagenInferior->cabecera.anchura)
-                imagenConcatenada->matrizDePixeles->data[i + imagenSuperior->cabecera.altura][j] = imagenInferior->matrizDePixeles->data[i][j];
+            if (j < imagenSuperior->cabecera.anchura)
+                imagenConcatenada->matrizDePixeles->data[i + imagenInferior->cabecera.altura][j] = imagenSuperior->matrizDePixeles->data[i][j];
             else
-                imagenConcatenada->matrizDePixeles->data[i + imagenSuperior->cabecera.altura][j] = pixelVerde;
+                imagenConcatenada->matrizDePixeles->data[i + imagenInferior->cabecera.altura][j] = pixelVerde;
         }
     }
     return imagenConcatenada;

@@ -9,8 +9,8 @@ typedef void(*printStruct)(const void*);
 
 int guardarImagen(const char *nombreArch, TDA_ImagenBMP *imagen);
 void convertirEscalaDeGrises(TDA_ImagenBMP *imagen);
-void cambioTonalidad(PixelRGB *imagenOriginal, const BmpHeader *imgHeader, float rojo, float verde, float azul);
-void cambioNegativo(PixelRGB *pixels, const BmpHeader *imgHeader);
+void cambioTonalidad(TDA_ImagenBMP *imagen, float rojo, float verde, float azul);
+void cambioNegativo(TDA_ImagenBMP *imagen);
 void testHeader(BmpHeader* h);
 void parse_argv(int argc, char* argv[], OpcionesImagen *opciones);
 void mostrarAyuda();
@@ -18,11 +18,10 @@ void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor);
 bool requiereSegundaImagen(TipoOperacion operacion);
 void generarNombreArchivo(const char* archivoOriginal, TipoOperacion operacion, char* nombreSalida);
 const char* obtenerNombreOperacion(TipoOperacion operacion);
-void cambioContraste(PixelRGB *pixels, const BmpHeader *imgHeader, int contraste);
-int _adjustContrast(uint8_t pixel, float factor);
-void espejarVertical(PixelRGB *pixels, const BmpHeader *imgHeader);
-void espejarHorizontal(PixelRGB *pixels, const BmpHeader *imgHeader);
-void rotarDerecha(PixelRGB *pixels, BmpHeader *imgHeader);
+void cambioContraste(TDA_ImagenBMP *imagen, int contraste);
+void espejarVertical(TDA_ImagenBMP *imagen);
+void espejarHorizontal(TDA_ImagenBMP *imagen);
+void rotarDerecha(TDA_ImagenBMP *imagen);
 
 
 
