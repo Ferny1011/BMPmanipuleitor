@@ -42,8 +42,9 @@ typedef struct {
 
 TDA_ImagenBMP *crearImagenBMP(const char *nombreArchivo);
 int crearMatPixeles(TDA_Matriz *mat, int columnas, int filas);
+void liberarImagenBMP(TDA_ImagenBMP *imagen);
 void freeMat(TDA_Matriz *mat);
-int duplicarMatPixeles(TDA_ImagenBMP *original, TDA_ImagenBMP *copia);
+
 
 
 #endif // TDA_IMAGEN_BMP_H

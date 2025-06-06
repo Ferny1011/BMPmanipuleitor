@@ -16,49 +16,10 @@ void testHeader(BmpHeader *cabecera)
     printf("Tam Imagen: %d\n", cabecera->tamImagen);
 }
 
-// TODO (Santiago#1#05/29/25): pasar los pixels ya reservados, evitar memory leaks
-
-// int leerImagen(const char *fileName, PixelRGB **pixels, BmpHeader *imgHeader)
-// {
-//     uint32_t i = 0;
-//     FILE *imgFile = fopen(fileName, "rb");
-//     int tamFilaConPadding;
-//     if (!imgFile)
-//     {
-//         printf("Error al abrir el archivo %s", fileName);
-//         return 0;
-//     }
-
-//     fread(imgHeader, 54, 1, imgFile);
-//     if ((imgHeader->firma[0] != 'B' || imgHeader->firma[1] != 'M') || imgHeader->profundidad != 24 || imgHeader->compresion != 0)
-//     {
-//         printf("'%s' no es un archivo BMP valido\n", fileName);
-//         fclose(imgFile);
-//         return 0;
-//     }
-//     tamFilaConPadding = (int)(4 * ceil((float)(imgHeader->anchura) / 4.0f)) * (imgHeader->profundidad / 8);
-    
-//     if (!reservarPixels(pixels, imgHeader->anchura, imgHeader->altura))
-//     {
-//         printf("Error al reservar memoria para los pixels\n");
-//         fclose(imgFile);
-//         return 0;
-//     }
-
-//     PixelRGB *currentRowPointer = *pixels;
-//     for (i = 0; i < imgHeader->altura; i++)
-//     {
-//         fseek(imgFile, imgHeader->dataOffset + (i * tamFilaConPadding), SEEK_SET);
-//         fread(currentRowPointer, sizeof(PixelRGB), imgHeader->anchura, imgFile);
-//         currentRowPointer += imgHeader->anchura;
-//     }
-//     fclose(imgFile);
-//     return 1;
-// }
-
 int guardarImagen(const char *nombreArch, TDA_ImagenBMP *imagen)
 {
-    int i;
+    int i, padding;
+    char paddingBytes[3] = {0};
     FILE *outputFile = fopen(nombreArch, "wb");
     if (!outputFile)
     {
@@ -70,59 +31,42 @@ int guardarImagen(const char *nombreArch, TDA_ImagenBMP *imagen)
     for (i = 0; i < imagen->cabecera.altura; i++)
     {
         fwrite(imagen->matrizDePixeles->data[i], sizeof(PixelRGB), imagen->cabecera.anchura, outputFile);
-        int padding = (4 - (imagen->cabecera.anchura * sizeof(PixelRGB) % 4)) % 4;
+        padding = (4 - (imagen->cabecera.anchura * sizeof(PixelRGB) % 4)) % 4;
         if (padding > 0)
-        {
-            char paddingBytes[3] = {0}; // Padding de 0
             fwrite(paddingBytes, 1, padding, outputFile);
-        }
     }
     fclose(outputFile);
     return 1;
 }
 
-// void espejarVertical(PixelRGB *pixels, const BmpHeader *imgHeader)
-// {
-//     // Espejar verticalmente la imagen, guardando las filas en orden inverso
-//     int i, tamLinea = imgHeader->anchura * sizeof(PixelRGB);
-//     PixelRGB *tempLinea;
-//     if(!reservarPixels(&tempLinea, imgHeader->anchura, 1))
-//     {
-//         puts("Error al reservar memoria para el buffer temporal.");
-//         return;
-//     }
-    
-//     for (i = 0; i < imgHeader->altura / 2; i++)
-//     {
-//         // Copiar la fila actual al buffer temporal
-//         memcpy(tempLinea, &pixels[i * imgHeader->anchura], tamLinea);
-//         // Intercambiar con la fila correspondiente desde el final
-//         memcpy(&pixels[i * imgHeader->anchura], &pixels[(imgHeader->altura - 1 - i) * imgHeader->anchura], tamLinea);
-//         memcpy(&pixels[(imgHeader->altura - 1 - i) * imgHeader->anchura], tempLinea, tamLinea);
-//     }
-//     free(tempLinea);
-// }
+void espejarVertical(TDA_ImagenBMP *imagen)
+{
+    int i;
+    void *temp;
+    for (i = 0; i < imagen->cabecera.altura / 2; i++)
+    {
+        temp = imagen->matrizDePixeles->data[i];
+        imagen->matrizDePixeles->data[i] = imagen->matrizDePixeles->data[imagen->cabecera.altura - 1 - i];
+        imagen->matrizDePixeles->data[imagen->cabecera.altura - 1 - i] = temp;
+    }
+}
 
-// void espejarHorizontal(PixelRGB *pixels, const BmpHeader *imgHeader)
-// {
-//     PixelRGB temp, *inicioFila, *finFila;
-//     int fila;
-//     // Método optimizado: intercambio directo de píxeles sin buffer temporal
-//     for (fila = 0; fila < imgHeader->altura; fila++)
-//     {
-//         inicioFila = &pixels[fila * imgHeader->anchura];
-//         finFila = &pixels[fila * imgHeader->anchura + imgHeader->anchura - 1];
-//         while (inicioFila < finFila)
-//         {
-//             temp = *inicioFila;
-//             *inicioFila = *finFila;
-//             *finFila = temp;
-            
-//             inicioFila++;
-//             finFila--;
-//         }
-//     }
-// }
+void espejarHorizontal(TDA_ImagenBMP *imagen)
+{
+    int i, j;
+    PixelRGB temp, *fila;
+    for (i = 0; i < imagen->cabecera.altura; i++)
+    {
+        fila = imagen->matrizDePixeles->data[i];
+        for (j = 0; j < imagen->cabecera.anchura / 2; j++)
+        {
+            temp = fila[j];
+            fila[j] = fila[imagen->cabecera.anchura - 1 - j];
+            fila[imagen->cabecera.anchura - 1 - j] = temp;
+        }
+    }    
+}
+
 // *--->               generica                   <---
 //    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
 //    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
@@ -135,50 +79,36 @@ int guardarImagen(const char *nombreArch, TDA_ImagenBMP *imagen)
 //    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
 //    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
 
-
-
-// *--->               rotacion                  <---
-// *--->                                          
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//                                                <---
-
-void rotarDerecha(PixelRGB *pixels, BmpHeader *imgHeader)
+void rotarDerecha(TDA_ImagenBMP *imagen)
 {
-    
+    return;    
 }
 
 void convertirEscalaDeGrises(TDA_ImagenBMP *imagen)
 {
     int i, j, gray;
+    PixelRGB pixel;
     for (i = 0; i < imagen->cabecera.altura; i++)
-    {
         for (j = 0; j < imagen->cabecera.anchura; j++)
         {
-            PixelRGB pixel = imagen->matrizDePixeles->data[i][j];
+            pixel = imagen->matrizDePixeles->data[i][j];
             gray = (pixel.r + pixel.g + pixel.b) / 3;
             imagen->matrizDePixeles->data[i][j].r = gray;
             imagen->matrizDePixeles->data[i][j].g = gray;
             imagen->matrizDePixeles->data[i][j].b = gray;
         }
-    }
 }
 
-void cambioTonalidad(PixelRGB *pixels, const BmpHeader *imgHeader, float rojo, float verde, float azul)
+void cambioTonalidad(TDA_ImagenBMP *imagen, float rojo, float verde, float azul)
 {
-    for (int i = 0; i < imgHeader->anchura * imgHeader->altura; i++)
+    int i, j;
+    for (i = 0; i < imagen->cabecera.altura; i++)
     {
-        pixels[i].r = _min((int)(pixels[i].r * rojo), 255);
-        pixels[i].g = _min((int)(pixels[i].g * verde), 255);
-        pixels[i].b = _min((int)(pixels[i].b * azul), 255);
+        for (j = 0; j < imagen->cabecera.anchura; j++){
+            imagen->matrizDePixeles->data[i][j].r = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].r * rojo);
+            imagen->matrizDePixeles->data[i][j].g = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].g * verde);
+            imagen->matrizDePixeles->data[i][j].b = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].b * azul);
+        }
     }
 }
 
@@ -188,26 +118,29 @@ int _adjustContrast(uint8_t pixel, float factor)
     return newPixel = (newPixel < 0 || newPixel > 255) ? (newPixel < 0 ? 0 : 255) : newPixel;
 }
 
-void cambioContraste(PixelRGB *pixels, const BmpHeader *imgHeader, int contraste)
+void cambioContraste(TDA_ImagenBMP *imagen, int contraste)
 {
     float factor = (259.0 * (contraste + 255.0)) / (255.0 * (259.0 - contraste));
-    int i;
-    for (i = 0; i < imgHeader->anchura * imgHeader->altura; i++)
-    {
-        pixels[i].r = _adjustContrast(pixels[i].r, factor);
-        pixels[i].g = _adjustContrast(pixels[i].g, factor);
-        pixels[i].b = _adjustContrast(pixels[i].b, factor);
-    }
+    int i, j;
+    for (i = 0; i < imagen->cabecera.altura; i++)
+        for (j = 0; j < imagen->cabecera.anchura; j++)
+        {
+            imagen->matrizDePixeles->data[i][j].r = _adjustContrast(imagen->matrizDePixeles->data[i][j].r, factor);
+            imagen->matrizDePixeles->data[i][j].g = _adjustContrast(imagen->matrizDePixeles->data[i][j].g, factor);
+            imagen->matrizDePixeles->data[i][j].b = _adjustContrast(imagen->matrizDePixeles->data[i][j].b, factor);
+        }    
 }
 
-void cambioNegativo(PixelRGB *pixels, const BmpHeader *imgHeader)
+void cambioNegativo(TDA_ImagenBMP *imagen)
 {
-    for (int i = 0; i < imgHeader->anchura * imgHeader->altura; i++)
-    {
-        pixels[i].r = 255 - pixels[i].r;
-        pixels[i].g = 255 - pixels[i].g;
-        pixels[i].b = 255 - pixels[i].b;
-    }
+    int i, j;
+    for (i = 0; i < imagen->cabecera.altura; i++)
+        for (j = 0; j < imagen->cabecera.anchura; j++)
+        {
+            imagen->matrizDePixeles->data[i][j].r = 255 - imagen->matrizDePixeles->data[i][j].r;
+            imagen->matrizDePixeles->data[i][j].g = 255 - imagen->matrizDePixeles->data[i][j].g;
+            imagen->matrizDePixeles->data[i][j].b = 255 - imagen->matrizDePixeles->data[i][j].b;
+        }
 }
 
 void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor)
@@ -229,9 +162,7 @@ void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor)
         opciones->numOperaciones++;
     }
     else
-    {
         printf("Error: Se alcanzo el maximo numero de operaciones (16).\n");
-    }
 }
 
 void mostrarAyuda()
@@ -363,7 +294,6 @@ void generarNombreArchivo(const char *archivoOriginal, TipoOperacion operacion, 
         ultimaBarra = strrchr(nombreBase, '/');
 
     soloNombre = (ultimaBarra != NULL) ? ultimaBarra + 1 : nombreBase;
-
     sprintf(nombreSalida, "%s_%s_%s.bmp", NOMBRE_GRUPO, obtenerNombreOperacion(operacion), soloNombre);
 }
 

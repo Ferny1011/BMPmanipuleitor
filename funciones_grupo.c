@@ -63,9 +63,6 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
         printf("Segunda imagen cargada: %s (%dx%d)\n", opciones->imgFiles[1], 
                imagen2->cabecera.anchura, imagen2->cabecera.altura);
     }
-    
-    // Crear copia de la imagen original para cada operación, evitando sobrescribir la original
-
 
     for(int i = 0; i < opciones->numOperaciones; i++) {
         imagenCopia = crearImagenBMP(opciones->imgFiles[0]);
@@ -74,7 +71,6 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
                    obtenerNombreOperacion(opciones->operaciones[i].operacion));
             continue;
         }
-        //duplicarMatPixeles(imagenOriginal, imagenCopia);
         
         printf("Aplicando operacion: %s", obtenerNombreOperacion(opciones->operaciones[i].operacion));
         if(opciones->operaciones[i].valor != -1){
@@ -94,13 +90,13 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
                 convertirEscalaDeGrises(imagenCopia);
                 break;
             case OP_TONALIDAD_AZUL:
-                //cambioTonalidad(imagenCopia, &headerCopia, 1, 1, 1 + ((float) opciones->operaciones[i].valor / 100));
+                cambioTonalidad(imagenCopia, 1, 1, 1 + ((float) opciones->operaciones[i].valor / 100));
                 break;
             case OP_TONALIDAD_ROJA:
-                //cambioTonalidad(imagenCopia, &headerCopia, 1 + ((float) opciones->operaciones[i].valor / 100), 1, 1);
+                cambioTonalidad(imagenCopia, 1 + ((float) opciones->operaciones[i].valor / 100), 1, 1);
                 break;
             case OP_TONALIDAD_VERDE:
-                //cambioTonalidad(imagenCopia, &headerCopia, 1, 1 + ((float) opciones->operaciones[i].valor / 100), 1);
+                cambioTonalidad(imagenCopia, 1, 1 + ((float) opciones->operaciones[i].valor / 100), 1);
                 break;
             case OP_AUMENTAR_CONTRASTE:
                 //cambioContraste(imagenCopia, &headerCopia, opciones->operaciones[i].valor);
@@ -109,16 +105,16 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
                 //cambioContraste(imagenCopia, &headerCopia, opciones->operaciones[i].valor * -1);
                 break;            
             case OP_NEGATIVO:
-                //cambioNegativo(imagenCopia, &headerCopia);
+                cambioNegativo(imagenCopia);
                 break;
             case OP_CONCATENAR_VERTICAL:
                 imagenCopia = concatenarImagenVertical(imagenOriginal, imagen2);
                 break;
             case OP_ESPEJAR_VERTICAL:
-                //espejarVertical(imagenCopia, &headerCopia);
+                espejarVertical(imagenCopia);
                 break;
             case OP_ESPEJAR_HORIZONTAL:
-                //espejarHorizontal(imagenCopia, &headerCopia);
+                espejarHorizontal(imagenCopia);
                 break;
             case OP_ROTAR_DERECHA:
             case OP_ROTAR_IZQUIERDA:
@@ -134,24 +130,15 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
         }
         
         generarNombreArchivo(opciones->imgFiles[0], opciones->operaciones[i].operacion, nombreSalida);
-        if(guardarImagen(nombreSalida, imagenCopia)) {
+        if(guardarImagen(nombreSalida, imagenCopia))
             printf("\n\t-> Imagen guardada como: %s\n", nombreSalida);
-        } else {
+        else
             printf("\nError al guardar la imagen procesada.\n");
-        }
-        // if(!requiereSegundaImagen(opciones->operaciones[i].operacion)) {
-        //     generarNombreArchivo(opciones->imgFiles[0], opciones->operaciones[i].operacion, nombreSalida);
-        //     guardarImagen(nombreSalida, imagenCopia);
-        //     printf("\n\t-> Imagen guardada como: %s\n", nombreSalida);
-        // } else {
-        //     // Para operaciones que requieren una segunda imagen, la imagen se guarda en otro momento
-        //     continue;
-        // }
     }
     
-    liberarPixels(&imagenOriginal);
-    liberarPixels(&imagenCopia);
-    liberarPixels(&imagen2);
+    liberarImagenBMP(imagenOriginal);
+    liberarImagenBMP(imagen2);
+    liberarImagenBMP(imagenCopia);
     printf("\nProcesamiento completado.\n");
 }
 

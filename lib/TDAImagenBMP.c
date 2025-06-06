@@ -19,7 +19,6 @@ int crearMatPixeles(TDA_Matriz* mat, int columnas, int filas){
     }
     mat->columnas = columnas;
     mat->filas = filas;
-
     return 1;
 }
 
@@ -27,7 +26,7 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
     TDA_ImagenBMP* imagen = NULL;
     PixelRGB *filaSinRelleno = NULL;
     FILE *imgFile = NULL;
-    int i, j, padding, tamfilaSinRelleno;
+    int i, padding, tamfilaSinRelleno;
 
     imagen = (TDA_ImagenBMP*)malloc(sizeof(TDA_ImagenBMP));
     if ( !imagen ) {
@@ -43,7 +42,7 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
     //chequear la firma BM, cheaquear 24bits, prof = 1, compresion = 0
     if ( imagen->cabecera.firma[0] != 'B' || imagen->cabecera.firma[1] != 'M' ||
          imagen->cabecera.profundidad != 24 || imagen->cabecera.compresion != 0 ) {
-        puts("El archivo no es un BMP valido");
+        puts("El archivo no es un BMP soportado (24 bits sin compresion)");
         fclose(imgFile);
         free(imagen);
         return NULL;
@@ -61,12 +60,13 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
         puts("Error al crear la matriz de pixeles");
         fclose(imgFile);
         free(imagen);
+        free(imagen->matrizDePixeles);
         return NULL;
     }
     // calcular el padding de la imagen
     padding = (4 - (imagen->cabecera.anchura * sizeof(PixelRGB) % 4)) % 4;
     tamfilaSinRelleno = (imagen->cabecera.anchura * sizeof(PixelRGB));
-    // reservar memoria para la fila con padding
+    // reservar memoria para la fila sin tener en cuenta padding
     filaSinRelleno = (PixelRGB*)malloc(tamfilaSinRelleno);
     if ( !filaSinRelleno ) {
         puts("Error al reservar memoria para la fila con padding");
@@ -78,13 +78,7 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
 
     fseek(imgFile, imagen->cabecera.dataOffset, SEEK_SET);
     for (i = 0; i < imagen->cabecera.altura; i++) {
-        fread(filaSinRelleno, sizeof(PixelRGB), imagen->cabecera.anchura, imgFile);
-        // copiar los pixeles a la matriz de pixeles
-        for (j = 0; j < imagen->cabecera.anchura; j++) {
-            imagen->matrizDePixeles->data[i][j].b = filaSinRelleno[j].b;
-            imagen->matrizDePixeles->data[i][j].g = filaSinRelleno[j].g;
-            imagen->matrizDePixeles->data[i][j].r = filaSinRelleno[j].r;
-        }
+        fread(imagen->matrizDePixeles->data[i], sizeof(PixelRGB), imagen->cabecera.anchura, imgFile);
         fseek(imgFile, padding, SEEK_CUR);
     }
     free(filaSinRelleno);
@@ -92,31 +86,13 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
     return imagen;
 }
 
-int duplicarMatPixeles(TDA_ImagenBMP *original, TDA_ImagenBMP *copia) {
-    if (!original || !copia || !original->matrizDePixeles || !copia->matrizDePixeles) {
-        puts("Error: Imagen original o copia no inicializadas correctamente.");
-        return 0;
+void liberarImagenBMP(TDA_ImagenBMP *imagen){
+    if( !imagen ) return;
+    if( imagen->matrizDePixeles ) {
+        freeMat(imagen->matrizDePixeles);
+        free(imagen->matrizDePixeles);
     }
-
-    copia->cabecera = original->cabecera;
-    if (!crearMatPixeles(copia->matrizDePixeles, original->matrizDePixeles->columnas, original->matrizDePixeles->filas)) {
-        puts("Error al crear la matriz de pixeles para la copia.");
-        return 0;
-    }
-
-    for (int i = 0; i < original->matrizDePixeles->filas; i++) {
-        memcpy(copia->matrizDePixeles->data[i], original->matrizDePixeles->data[i],
-               original->matrizDePixeles->columnas * sizeof(PixelRGB));
-    }
-
-    return 1;
-}
-
-void liberarPixels(PixelRGB **pixels) {
-    if (pixels && *pixels) {
-        free(*pixels);
-        *pixels = NULL;
-    }
+    free(imagen);
 }
 
 void freeMat(TDA_Matriz *mat){
