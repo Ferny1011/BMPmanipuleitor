@@ -99,10 +99,10 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
                 cambioTonalidad(imagenCopia, 1, 1 + ((float) opciones->operaciones[i].valor / 100), 1);
                 break;
             case OP_AUMENTAR_CONTRASTE:
-                //cambioContraste(imagenCopia, &headerCopia, opciones->operaciones[i].valor);
+                cambioContraste(imagenCopia, opciones->operaciones[i].valor);
                 break;
             case OP_DISMINUIR_CONTRASTE:
-                //cambioContraste(imagenCopia, &headerCopia, opciones->operaciones[i].valor * -1);
+                cambioContraste(imagenCopia, opciones->operaciones[i].valor * -1);
                 break;            
             case OP_NEGATIVO:
                 cambioNegativo(imagenCopia);
