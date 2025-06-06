@@ -29,9 +29,9 @@ typedef struct {
 }PixelRGB;
 
 typedef struct{
-    void** data;
+    PixelRGB** data;
     size_t tamElem, columnas, filas;
-}TDA_Matriz
+}TDA_Matriz;
 
 typedef struct {
     BmpHeader cabecera;
@@ -40,9 +40,10 @@ typedef struct {
 }TDA_ImagenBMP;
 
 
-TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo);
-int reservarPixels(PixelRGB **pixels, int ancho, int alto)
-
+TDA_ImagenBMP *crearImagenBMP(const char *nombreArchivo);
+int crearMatPixeles(TDA_Matriz *mat, int columnas, int filas);
+void freeMat(TDA_Matriz *mat);
+int duplicarMatPixeles(TDA_ImagenBMP *original, TDA_ImagenBMP *copia);
 
 
 #endif // TDA_IMAGEN_BMP_H

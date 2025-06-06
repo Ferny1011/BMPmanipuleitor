@@ -18,105 +18,111 @@ void testHeader(BmpHeader *cabecera)
 
 // TODO (Santiago#1#05/29/25): pasar los pixels ya reservados, evitar memory leaks
 
-int leerImagen(const char *fileName, PixelRGB **pixels, BmpHeader *imgHeader)
-{
-    uint32_t i = 0;
-    FILE *imgFile = fopen(fileName, "rb");
-    int tamFilaConPadding;
-    if (!imgFile)
-    {
-        printf("Error al abrir el archivo %s", fileName);
-        return 0;
-    }
+// int leerImagen(const char *fileName, PixelRGB **pixels, BmpHeader *imgHeader)
+// {
+//     uint32_t i = 0;
+//     FILE *imgFile = fopen(fileName, "rb");
+//     int tamFilaConPadding;
+//     if (!imgFile)
+//     {
+//         printf("Error al abrir el archivo %s", fileName);
+//         return 0;
+//     }
 
-    fread(imgHeader, 54, 1, imgFile);
-    if ((imgHeader->firma[0] != 'B' || imgHeader->firma[1] != 'M') || imgHeader->profundidad != 24 || imgHeader->compresion != 0)
-    {
-        printf("'%s' no es un archivo BMP valido\n", fileName);
-        fclose(imgFile);
-        return 0;
-    }
-    tamFilaConPadding = (int)(4 * ceil((float)(imgHeader->anchura) / 4.0f)) * (imgHeader->profundidad / 8);
+//     fread(imgHeader, 54, 1, imgFile);
+//     if ((imgHeader->firma[0] != 'B' || imgHeader->firma[1] != 'M') || imgHeader->profundidad != 24 || imgHeader->compresion != 0)
+//     {
+//         printf("'%s' no es un archivo BMP valido\n", fileName);
+//         fclose(imgFile);
+//         return 0;
+//     }
+//     tamFilaConPadding = (int)(4 * ceil((float)(imgHeader->anchura) / 4.0f)) * (imgHeader->profundidad / 8);
     
-    if (!reservarPixels(pixels, imgHeader->anchura, imgHeader->altura))
+//     if (!reservarPixels(pixels, imgHeader->anchura, imgHeader->altura))
+//     {
+//         printf("Error al reservar memoria para los pixels\n");
+//         fclose(imgFile);
+//         return 0;
+//     }
+
+//     PixelRGB *currentRowPointer = *pixels;
+//     for (i = 0; i < imgHeader->altura; i++)
+//     {
+//         fseek(imgFile, imgHeader->dataOffset + (i * tamFilaConPadding), SEEK_SET);
+//         fread(currentRowPointer, sizeof(PixelRGB), imgHeader->anchura, imgFile);
+//         currentRowPointer += imgHeader->anchura;
+//     }
+//     fclose(imgFile);
+//     return 1;
+// }
+
+int guardarImagen(const char *nombreArch, TDA_ImagenBMP *imagen)
+{
+    int i;
+    FILE *outputFile = fopen(nombreArch, "wb");
+    if (!outputFile)
     {
-        printf("Error al reservar memoria para los pixels\n");
-        fclose(imgFile);
+        printf("Error al abrir el archivo %s para escritura.\n", nombreArch);
         return 0;
     }
-
-    PixelRGB *currentRowPointer = *pixels;
-    for (i = 0; i < imgHeader->altura; i++)
+    fwrite(&imagen->cabecera, sizeof(BmpHeader), 1, outputFile);
+    fseek(outputFile, imagen->cabecera.dataOffset, SEEK_SET);
+    for (i = 0; i < imagen->cabecera.altura; i++)
     {
-        fseek(imgFile, imgHeader->dataOffset + (i * tamFilaConPadding), SEEK_SET);
-        fread(currentRowPointer, sizeof(PixelRGB), imgHeader->anchura, imgFile);
-        currentRowPointer += imgHeader->anchura;
+        fwrite(imagen->matrizDePixeles->data[i], sizeof(PixelRGB), imagen->cabecera.anchura, outputFile);
+        int padding = (4 - (imagen->cabecera.anchura * sizeof(PixelRGB) % 4)) % 4;
+        if (padding > 0)
+        {
+            char paddingBytes[3] = {0}; // Padding de 0
+            fwrite(paddingBytes, 1, padding, outputFile);
+        }
     }
-    fclose(imgFile);
+    fclose(outputFile);
     return 1;
 }
 
-void WriteImage(const char *fileName, PixelRGB *pixels, BmpHeader imgHeader)
-{
-    int i;
-    FILE *outputFile = fopen(fileName, "wb");
-    int paddedRowSize = (int)(4 * ceil((float)(imgHeader.anchura) / 4.0f)) * (imgHeader.profundidad / 8);
-    fwrite(&imgHeader, sizeof(BmpHeader), 1, outputFile);
-    fseek(outputFile, imgHeader.dataOffset, SEEK_SET);
-
-    char *paddingBytes = (char *)calloc(paddedRowSize, 1);
-    for (i = 0; i < imgHeader.altura; i++)
-    {
-        // int pixelOffset = ((imgHeader.altura - i) - 1) * imgHeader.anchura;  // leemos la imagen tal cual está en el archivo
-        memcpy(paddingBytes, &pixels[/*pixelOffset*/ (i * imgHeader.anchura)], imgHeader.anchura * sizeof(PixelRGB));
-        fwrite(paddingBytes, 1, paddedRowSize, outputFile);
-    }
-    free(paddingBytes);
-    fclose(outputFile);
-}
-
-void espejarVertical(PixelRGB *pixels, const BmpHeader *imgHeader)
-{
-    // Espejar verticalmente la imagen, guardando las filas en orden inverso
-    int i, tamLinea = imgHeader->anchura * sizeof(PixelRGB);
-    PixelRGB *tempLinea;
-    if(!reservarPixels(&tempLinea, imgHeader->anchura, 1))
-    {
-        puts("Error al reservar memoria para el buffer temporal.");
-        return;
-    }
+// void espejarVertical(PixelRGB *pixels, const BmpHeader *imgHeader)
+// {
+//     // Espejar verticalmente la imagen, guardando las filas en orden inverso
+//     int i, tamLinea = imgHeader->anchura * sizeof(PixelRGB);
+//     PixelRGB *tempLinea;
+//     if(!reservarPixels(&tempLinea, imgHeader->anchura, 1))
+//     {
+//         puts("Error al reservar memoria para el buffer temporal.");
+//         return;
+//     }
     
-    for (i = 0; i < imgHeader->altura / 2; i++)
-    {
-        // Copiar la fila actual al buffer temporal
-        memcpy(tempLinea, &pixels[i * imgHeader->anchura], tamLinea);
-        // Intercambiar con la fila correspondiente desde el final
-        memcpy(&pixels[i * imgHeader->anchura], &pixels[(imgHeader->altura - 1 - i) * imgHeader->anchura], tamLinea);
-        memcpy(&pixels[(imgHeader->altura - 1 - i) * imgHeader->anchura], tempLinea, tamLinea);
-    }
-    free(tempLinea);
-}
+//     for (i = 0; i < imgHeader->altura / 2; i++)
+//     {
+//         // Copiar la fila actual al buffer temporal
+//         memcpy(tempLinea, &pixels[i * imgHeader->anchura], tamLinea);
+//         // Intercambiar con la fila correspondiente desde el final
+//         memcpy(&pixels[i * imgHeader->anchura], &pixels[(imgHeader->altura - 1 - i) * imgHeader->anchura], tamLinea);
+//         memcpy(&pixels[(imgHeader->altura - 1 - i) * imgHeader->anchura], tempLinea, tamLinea);
+//     }
+//     free(tempLinea);
+// }
 
-void espejarHorizontal(PixelRGB *pixels, const BmpHeader *imgHeader)
-{
-    PixelRGB temp, *inicioFila, *finFila;
-    int fila;
-    // Método optimizado: intercambio directo de píxeles sin buffer temporal
-    for (fila = 0; fila < imgHeader->altura; fila++)
-    {
-        inicioFila = &pixels[fila * imgHeader->anchura];
-        finFila = &pixels[fila * imgHeader->anchura + imgHeader->anchura - 1];
-        while (inicioFila < finFila)
-        {
-            temp = *inicioFila;
-            *inicioFila = *finFila;
-            *finFila = temp;
+// void espejarHorizontal(PixelRGB *pixels, const BmpHeader *imgHeader)
+// {
+//     PixelRGB temp, *inicioFila, *finFila;
+//     int fila;
+//     // Método optimizado: intercambio directo de píxeles sin buffer temporal
+//     for (fila = 0; fila < imgHeader->altura; fila++)
+//     {
+//         inicioFila = &pixels[fila * imgHeader->anchura];
+//         finFila = &pixels[fila * imgHeader->anchura + imgHeader->anchura - 1];
+//         while (inicioFila < finFila)
+//         {
+//             temp = *inicioFila;
+//             *inicioFila = *finFila;
+//             *finFila = temp;
             
-            inicioFila++;
-            finFila--;
-        }
-    }
-}
+//             inicioFila++;
+//             finFila--;
+//         }
+//     }
+// }
 // *--->               generica                   <---
 //    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
 //    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
@@ -150,15 +156,19 @@ void rotarDerecha(PixelRGB *pixels, BmpHeader *imgHeader)
     
 }
 
-void convertirEscalaDeGrises(PixelRGB *pixels, const BmpHeader *imgHeader)
+void convertirEscalaDeGrises(TDA_ImagenBMP *imagen)
 {
-    int i, gray;
-    for (i = 0; i < imgHeader->anchura * imgHeader->altura; i++)
+    int i, j, gray;
+    for (i = 0; i < imagen->cabecera.altura; i++)
     {
-        gray = (int)(0.299 * pixels[i].r + 0.587 * pixels[i].g + 0.114 * pixels[i].b);
-        pixels[i].r = gray;
-        pixels[i].g = gray;
-        pixels[i].b = gray;
+        for (j = 0; j < imagen->cabecera.anchura; j++)
+        {
+            PixelRGB pixel = imagen->matrizDePixeles->data[i][j];
+            gray = (pixel.r + pixel.g + pixel.b) / 3;
+            imagen->matrizDePixeles->data[i][j].r = gray;
+            imagen->matrizDePixeles->data[i][j].g = gray;
+            imagen->matrizDePixeles->data[i][j].b = gray;
+        }
     }
 }
 
