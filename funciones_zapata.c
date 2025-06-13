@@ -81,7 +81,66 @@ void espejarHorizontal(TDA_ImagenBMP *imagen)
 
 void rotarDerecha(TDA_ImagenBMP *imagen)
 {
-    return;    
+    _rotarMatriz(imagen, DERECHA);
+}
+
+void rotarIzquierda(TDA_ImagenBMP *imagen)
+{
+    _rotarMatriz(imagen, IZQUIERDA);
+}
+
+void _rotarMatriz(TDA_ImagenBMP *imagen, int angulo)
+{
+    TDA_ImagenBMP *imagenRotada = NULL;
+    int i, j;
+
+    imagenRotada = (TDA_ImagenBMP *)malloc(sizeof(TDA_ImagenBMP));
+    if (!imagenRotada)
+    {
+        printf("Error al reservar memoria para la imagen rotada.\n");
+        return;
+    }
+    imagenRotada->cabecera = imagen->cabecera;
+    imagenRotada->cabecera.altura = imagen->cabecera.anchura;
+    imagenRotada->cabecera.anchura = imagen->cabecera.altura;
+
+    imagenRotada->matrizDePixeles = (TDA_Matriz *)malloc(sizeof(TDA_Matriz));
+    if (!imagenRotada->matrizDePixeles)
+    {
+        printf("Error al reservar memoria para la matriz de pixeles de la imagen rotada.\n");
+        liberarImagenBMP(imagenRotada);
+        return;
+    }
+    if (!crearMatPixeles(imagenRotada->matrizDePixeles, imagenRotada->cabecera.anchura, imagenRotada->cabecera.altura))
+    {
+        printf("Error al crear la matriz de pixeles para la imagen rotada.\n");
+        liberarImagenBMP(imagenRotada);
+        return;
+    }
+
+
+    for(i = 0; i < imagen->cabecera.altura; i++)
+    {
+        for(j = 0; j < imagen->cabecera.anchura; j++)
+        {
+            if (angulo < 0)
+            {
+                imagenRotada->matrizDePixeles->data[j][imagen->cabecera.altura - 1 - i] = imagen->matrizDePixeles->data[i][j];
+            }
+            else
+            {
+                imagenRotada->matrizDePixeles->data[imagen->cabecera.anchura - 1 - j][i] = imagen->matrizDePixeles->data[i][j];
+            }
+
+        }
+    }
+    imagen->cabecera = imagenRotada->cabecera;
+    free(imagen->matrizDePixeles->data);
+    imagen->matrizDePixeles = imagenRotada->matrizDePixeles;
+    imagenRotada->matrizDePixeles = NULL;
+    liberarImagenBMP(imagenRotada);
+    imagenRotada = NULL;
+    return;
 }
 
 void convertirEscalaDeGrises(TDA_ImagenBMP *imagen)

@@ -119,7 +119,7 @@ bmp_manipuleitor.exe unlam.bmp --negativo --escala-de-grises --argumento-incorre
 - Ignora el segundo `--negativo` (duplicado)
 - Genera: `LUMEN_negativo_unlam.bmp`, `LUMEN_escala-de-grises_unlam.bmp`, `LUMEN_aumentar-contraste_unlam.bmp`
 
-## ⚙️ Comportamiento del Sistema
+## Comportamiento del Sistema
 
 ### Manejo de Errores
 - **Argumentos incorrectos**: Se ignoran con advertencia en consola
@@ -147,8 +147,11 @@ BMPmanipuleitor/
 ├── build.sh               # Script de compilación
 ├── README.md              # Este archivo
 ├── bin/                   # Ejecutables compilados
+├── lib/                   # Librería TDAImagenBMP
 └── resources/             # Imágenes de ejemplo
 ```
+
+Tomamos la decisión de separar el manejo del TDAImagenBMP en un directorio `lib/` para mantener el código organizado y facilitar su implementación en las funciones de cada alumno, es una capa de abstracción que nos permite trabajar con las imágenes sin preocuparnos por las complejidades del formato. La librería `TDAImagenBMP` se encarga de las operaciones básicas de lectura y reserva de memoria, tanto para las estructuras como para la matriz de pixeles y su posterior liberación.
 
 ## 👥 Autores
 
