@@ -4,6 +4,8 @@
 #include "funciones_grupo.h"
 
 #define NOMBRE_GRUPO "LUMEN"
+#define DERECHA 90
+#define IZQUIERDA -90
 
 typedef void(*printStruct)(const void*);
 
@@ -21,7 +23,9 @@ const char* obtenerNombreOperacion(TipoOperacion operacion);
 void cambioContraste(TDA_ImagenBMP *imagen, int contraste);
 void espejarVertical(TDA_ImagenBMP *imagen);
 void espejarHorizontal(TDA_ImagenBMP *imagen);
+void _rotarMatriz(TDA_ImagenBMP *imagen, int angulo);
 void rotarDerecha(TDA_ImagenBMP *imagen);
+void rotarIzquierda(TDA_ImagenBMP *imagen);
 
 
 

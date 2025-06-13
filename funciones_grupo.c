@@ -117,7 +117,11 @@ void ejecutarOperaciones(OpcionesImagen *opciones){
                 espejarHorizontal(imagenCopia);
                 break;
             case OP_ROTAR_DERECHA:
+                rotarDerecha(imagenCopia);
+                break;
             case OP_ROTAR_IZQUIERDA:
+                rotarIzquierda(imagenCopia);
+                break;
             case OP_RECORTAR:
             case OP_ACHICAR:
             case OP_CONCATENAR_HORIZONTAL:
