@@ -11,7 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="--tonalidad-azul=70  resources/imagen.bmp --tonalidad-roja=20" />
+				<Option parameters="--concatenar-horizontal  resources/imagen.bmp resources/img.bmp  " />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -44,6 +44,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="funciones_zapata.h" />
+		<Unit filename="lib/TDAImagenBMP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/TDAImagenBMP.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
