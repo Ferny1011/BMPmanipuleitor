@@ -26,7 +26,7 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
     TDA_ImagenBMP* imagen = NULL;
     PixelRGB *filaSinRelleno = NULL;
     FILE *imgFile = NULL;
-    int i, padding, tamfilaSinRelleno;
+    int i, padding;
 
     imagen = (TDA_ImagenBMP*)malloc(sizeof(TDA_ImagenBMP));
     if ( !imagen ) {
@@ -65,23 +65,12 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
     }
     // calcular el padding de la imagen
     padding = (4 - (imagen->cabecera.anchura * sizeof(PixelRGB) % 4)) % 4;
-    tamfilaSinRelleno = (imagen->cabecera.anchura * sizeof(PixelRGB));
-    // reservar memoria para la fila sin tener en cuenta padding
-    filaSinRelleno = (PixelRGB*)malloc(tamfilaSinRelleno);
-    if ( !filaSinRelleno ) {
-        puts("Error al reservar memoria para la fila con padding");
-        fclose(imgFile);
-        free(imagen);
-        freeMat(imagen->matrizDePixeles);
-        return NULL;
-    }
 
     fseek(imgFile, imagen->cabecera.dataOffset, SEEK_SET);
     for (i = 0; i < imagen->cabecera.altura; i++) {
         fread(imagen->matrizDePixeles->data[i], sizeof(PixelRGB), imagen->cabecera.anchura, imgFile);
         fseek(imgFile, padding, SEEK_CUR);
     }
-    free(filaSinRelleno);
     fclose(imgFile);
     return imagen;
 }

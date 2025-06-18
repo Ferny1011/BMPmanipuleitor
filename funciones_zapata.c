@@ -124,14 +124,9 @@ void _rotarMatriz(TDA_ImagenBMP *imagen, int angulo)
         for(j = 0; j < imagen->cabecera.anchura; j++)
         {
             if (angulo < 0)
-            {
                 imagenRotada->matrizDePixeles->data[j][imagen->cabecera.altura - 1 - i] = imagen->matrizDePixeles->data[i][j];
-            }
             else
-            {
                 imagenRotada->matrizDePixeles->data[imagen->cabecera.anchura - 1 - j][i] = imagen->matrizDePixeles->data[i][j];
-            }
-
         }
     }
     imagen->cabecera = imagenRotada->cabecera;
