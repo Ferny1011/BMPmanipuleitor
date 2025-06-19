@@ -240,7 +240,8 @@ void mostrarAyuda()
            "  --espejar-horizontal         Espeja horizontalmente\n"
            "  --espejar-vertical           Espeja verticalmente\n"
            "  --concatenar-horizontal      Concatena dos imagenes horizontalmente (requiere 2 imagenes)\n"
-           "  --concatenar-vertical        Concatena dos imagenes verticalmente (requiere 2 imagenes)\n\n"
+           "  --concatenar-vertical        Concatena dos imagenes verticalmente (requiere 2 imagenes)\n"
+           "  --funcionalidad-extra        Aplica todas las operaciones especificadas a la misma imagen\n\n"
            "Opciones con valores (formato: --opcion=valor):\n"
            "  --tonalidad-azul[=%%]        Ajusta tonalidad azul (defecto: 10)\n"
            "  --tonalidad-roja[=%%]        Ajusta tonalidad roja (defecto: 10)\n"
@@ -253,6 +254,8 @@ void mostrarAyuda()
            "Comportamiento:\n"
            "  - Cada operacion genera un archivo separado: LUMEN_<operacion>_<imagen>.bmp\n"
            "  - Las operaciones duplicadas se ejecutan solo una vez\n"
+           "  - Si se incluye --funcionalidad-extra, todas las operaciones se aplican en cadena\n"
+           "    sobre la misma imagen, y se genera un solo archivo de salida\n"
            "  - Los argumentos incorrectos se ignoran con advertencia\n"
            "  - Si una operacion falla, se continua con las demas\n"
            "  - Las operaciones se procesan en el orden especificado\n\n"
@@ -262,7 +265,9 @@ void mostrarAyuda()
            "  bmpmanipuleitor.exe imagen.bmp --aumentar-contraste=18 --tonalidad-azul=5\n"
            "    Genera: LUMEN_aumentar-contraste_imagen.bmp, LUMEN_tonalidad-azul_imagen.bmp\n\n"
            "  bmpmanipuleitor.exe img1.bmp img2.bmp --concatenar-vertical\n"
-           "    Genera: LUMEN_concatenar-vertical_img1.bmp\n\n");
+           "    Genera: LUMEN_concatenar-vertical_img1.bmp\n\n"
+           "  bmpmanipuleitor.exe imagen.bmp --funcionalidad-extra --tonalidad-roja=40 --tonalidad-azul=40 --rotar-derecha\n"
+           "    Genera: LUMEN_funcionalidad-extra_imagen.bmp con todos los filtros aplicados en cadena\n\n");
 }
 
 void parse_argv(int argc, char *argv[], OpcionesImagen *opciones)
@@ -312,6 +317,8 @@ void parse_argv(int argc, char *argv[], OpcionesImagen *opciones)
             agregarOperacion(opciones, OP_CONCATENAR_HORIZONTAL, valor);
         else if (!strcmp(argumentoActual, "--concatenar-vertical"))
             agregarOperacion(opciones, OP_CONCATENAR_VERTICAL, valor);
+        else if (!strcmp(argumentoActual, "--funcionalidad-extra"))
+            agregarOperacion(opciones, OP_FUNCIONALIDAD_EXTRA, valor);
         else if (argumentoActual[0] != '-')
         {
             if (opciones->cantImg < 2)
@@ -390,6 +397,8 @@ const char *obtenerNombreOperacion(TipoOperacion operacion)
         return "concatenar-horizontal";
     case OP_CONCATENAR_VERTICAL:
         return "concatenar-vertical";
+    case OP_FUNCIONALIDAD_EXTRA:
+    return "funcionalidad-extra";
     default:
         return "desconocida";
     }
