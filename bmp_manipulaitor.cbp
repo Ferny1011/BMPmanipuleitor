@@ -11,7 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="--concatenar-horizontal  resources/imagen.bmp resources/img.bmp  " />
+				<Option parameters="resources/imagen.bmp resources/img.bmp --funcionalidad-extra --concatenar-vertical --negativo" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>

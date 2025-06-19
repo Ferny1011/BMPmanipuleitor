@@ -116,3 +116,57 @@ TDA_ImagenBMP *concatenarImagenHorizontal(TDA_ImagenBMP *imagenIzquierda, TDA_Im
 
     return imagenConcatenada;
 }
+void aplicarFiltrosEnCadena(TDA_ImagenBMP *imagen, OperacionImagen *operaciones, int cantidadOperaciones, TDA_ImagenBMP *imagen2) {
+    int i;
+    TipoOperacion op;
+
+    for (i = 0; i < cantidadOperaciones; i++) {
+    op = operaciones[i].operacion;
+
+    if (op != OP_FUNCIONALIDAD_EXTRA) {
+        if (op == OP_ESCALA_GRISES) {
+            convertirEscalaDeGrises(imagen);
+        } else if (op == OP_TONALIDAD_AZUL) {
+            cambioTonalidad(imagen, 1.0f, 1.0f, 1.0f + ((float) operaciones[i].valor / 100.0f));
+        } else if (op == OP_TONALIDAD_ROJA) {
+            cambioTonalidad(imagen, 1.0f + ((float) operaciones[i].valor / 100.0f), 1.0f, 1.0f);
+        } else if (op == OP_TONALIDAD_VERDE) {
+            cambioTonalidad(imagen, 1.0f, 1.0f + ((float) operaciones[i].valor / 100.0f), 1.0f);
+        } else if (op == OP_AUMENTAR_CONTRASTE) {
+            cambioContraste(imagen, operaciones[i].valor);
+        } else if (op == OP_DISMINUIR_CONTRASTE) {
+            cambioContraste(imagen, -operaciones[i].valor);
+        } else if (op == OP_NEGATIVO) {
+            cambioNegativo(imagen);
+        } else if (op == OP_ESPEJAR_VERTICAL) {
+            espejarVertical(imagen);
+        } else if (op == OP_ESPEJAR_HORIZONTAL) {
+            espejarHorizontal(imagen);
+        } else if (op == OP_ROTAR_DERECHA) {
+            rotarDerecha(imagen);
+        } else if (op == OP_ROTAR_IZQUIERDA) {
+            rotarIzquierda(imagen);
+        } else if (op == OP_CONCATENAR_VERTICAL && imagen2 != NULL) {
+            TDA_ImagenBMP *tmp = concatenarImagenVertical(imagen, imagen2);
+            if (tmp != NULL) {
+                freeMat(imagen->matrizDePixeles);
+                imagen->cabecera = tmp->cabecera;
+                imagen->matrizDePixeles = tmp->matrizDePixeles;
+                tmp->matrizDePixeles = NULL;
+                free(tmp);
+            }
+        } else if (op == OP_CONCATENAR_HORIZONTAL && imagen2 != NULL) {
+            TDA_ImagenBMP *tmp = concatenarImagenHorizontal(imagen, imagen2);
+            if (tmp != NULL) {
+                freeMat(imagen->matrizDePixeles);
+                imagen->cabecera = tmp->cabecera;
+                imagen->matrizDePixeles = tmp->matrizDePixeles;
+                tmp->matrizDePixeles = NULL;
+                free(tmp);
+            }
+        } else {
+            printf("Operacion '%d' no soportada o imagen2 faltante.\n", (int)op);
+        }
+    }
+}
+}

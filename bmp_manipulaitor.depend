@@ -34,13 +34,14 @@
 1749229072 source:c:\dev\cprojects\tp_topicos_2025\bmp_manipulaitor\bmpmanipuleitor\lib\tdaimagenbmp.c
 	"TDAImagenBMP.h"
 
-1749908064 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_quiroga.c
+1750292232 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_quiroga.c
 	"funciones_quiroga.h"
 
-1749908100 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_quiroga.h
+1750290840 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_quiroga.h
 	"funciones_grupo.h"
+	"funciones_zapata.h"
 
-1749219662 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_grupo.h
+1750290757 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_grupo.h
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -49,23 +50,23 @@
 	<math.h>
 	"lib/TDAImagenBMP.h"
 
-1749907394 d:\programas\bmpmanipulator\bmpmanipuleitor\lib\tdaimagenbmp.h
+1749909768 d:\programas\bmpmanipulator\bmpmanipuleitor\lib\tdaimagenbmp.h
 	<stdlib.h>
 	<stdio.h>
 	<string.h>
 	<stdint.h>
 
-1749907394 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_zapata.c
+1750290937 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_zapata.c
 	"funciones_zapata.h"
 
-1749907394 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_zapata.h
+1750289510 d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_zapata.h
 	"funciones_grupo.h"
 
-1749908998 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_grupo.c
+1750290471 source:d:\programas\bmpmanipulator\bmpmanipuleitor\funciones_grupo.c
 	"funciones_grupo.h"
 	"funciones_zapata.h"
 	"funciones_quiroga.h"
 
-1749907394 source:d:\programas\bmpmanipulator\bmpmanipuleitor\lib\tdaimagenbmp.c
+1749909768 source:d:\programas\bmpmanipulator\bmpmanipuleitor\lib\tdaimagenbmp.c
 	"TDAImagenBMP.h"
 
