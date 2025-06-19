@@ -308,14 +308,6 @@ flowchart TD
     style AA fill:#dc2626,stroke:#ef4444,stroke-width:2px,color:#ffffff
 ```
 
-## Leyenda de Diagramas
-
-- **🔵 Azul Oscuro**: Puntos de entrada
-- **🟣 Púrpura**: Funciones principales de procesamiento  
-- **🟠 Naranja**: Procesamiento de modo especial
-- **🟢 Verde**: Ejecución de operaciones
-- **🔴 Rojo**: Puntos de salida/finalización
-
 ## 👥 Autores
 
 **Grupo LUMEN**
