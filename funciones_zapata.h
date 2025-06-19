@@ -21,6 +21,7 @@ bool requiereSegundaImagen(TipoOperacion operacion);
 void generarNombreArchivo(const char* archivoOriginal, TipoOperacion operacion, char* nombreSalida);
 const char* obtenerNombreOperacion(TipoOperacion operacion);
 void cambioContraste(TDA_ImagenBMP *imagen, int contraste);
+void imagenTrianguloRGB(TDA_ImagenBMP *imagen, float rojo, float verde, float azul);
 void espejarVertical(TDA_ImagenBMP *imagen);
 void espejarHorizontal(TDA_ImagenBMP *imagen);
 void _rotarMatriz(TDA_ImagenBMP *imagen, int angulo);

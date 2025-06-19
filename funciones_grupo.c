@@ -7,7 +7,7 @@
 * DNI: (sólo números, sin puntos)
 * Entrega: Sí/No.
 *
-* Apellido(s), nombre(s): Zapata Santiago
+* Apellido(s), nombre(s): Zapata, Santiago
 * DNI: 44525943
 * Entrega: Si.
 *
@@ -21,7 +21,6 @@ int main(int argc, char* argv[]){
     opciones.numOperaciones = 0;
     opciones.cantImg = 0;
 
-    //mostrar ayuda si se recibe el argumento --help o -h
     if(argc == 1 || (argc == 2 && (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0))) {
         mostrarAyuda();
         return 0;

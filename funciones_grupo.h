@@ -27,7 +27,8 @@ typedef enum {
     OP_AUMENTAR_CONTRASTE,
     OP_DISMINUIR_CONTRASTE,
     OP_NEGATIVO,
-    OP_FUNCIONALIDAD_EXTRA
+    OP_FUNCIONALIDAD_EXTRA,
+    OP_TRIANGULO_RGB
 }TipoOperacion;
 
 typedef struct {

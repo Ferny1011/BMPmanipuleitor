@@ -197,6 +197,35 @@ void cambioNegativo(TDA_ImagenBMP *imagen)
         }
 }
 
+void imagenTrianguloRGB(TDA_ImagenBMP *imagen, float rojo, float verde, float azul)
+{
+    int i, j;
+    int altura = imagen->cabecera.altura;
+    int anchura = imagen->cabecera.anchura;
+    PixelRGB pixelNegro = {0, 0, 0};
+    for (i = 0; i < altura; i++)
+        for (j = 0; j < anchura; j++)
+        {
+            // diagonales
+            if(i == j)
+                imagen->matrizDePixeles->data[i][j] = pixelNegro;
+            if (anchura - 1 - i == j)
+                imagen->matrizDePixeles->data[i][j] = pixelNegro;
+
+            // triangulo izquierdo
+            if (anchura - 1 - i >= j && i >= j)
+                imagen->matrizDePixeles->data[i][j].r = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].r * rojo);
+
+            // triangulo derecho
+            if (anchura - 1 - i <= j && i <= j)
+                imagen->matrizDePixeles->data[i][j].g = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].g * verde);
+
+            // triangulo inferior
+            if (anchura - 1 - i >= j && i <= j)
+                imagen->matrizDePixeles->data[i][j].b = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].b * azul);
+        }
+}
+
 void agregarOperacion(OpcionesImagen *opciones, TipoOperacion op, int valor)
 {
     // Verificar si la operación ya está agregada
@@ -314,6 +343,8 @@ void parse_argv(int argc, char *argv[], OpcionesImagen *opciones)
             agregarOperacion(opciones, OP_CONCATENAR_VERTICAL, valor);
         else if (!strcmp(argumentoActual, "--funcionalidad-extra"))
             agregarOperacion(opciones, OP_FUNCIONALIDAD_EXTRA, valor);
+        else if (!strcmp(argumentoActual, "--triangulo-rgb"))
+            agregarOperacion(opciones, OP_TRIANGULO_RGB, valor);
         else if (argumentoActual[0] != '-')
         {
             if (opciones->cantImg < 2)
@@ -393,7 +424,9 @@ const char *obtenerNombreOperacion(TipoOperacion operacion)
     case OP_CONCATENAR_VERTICAL:
         return "concatenar-vertical";
     case OP_FUNCIONALIDAD_EXTRA:
-    return "funcionalidad-extra";
+        return "funcionalidad-extra";
+    case OP_TRIANGULO_RGB:
+        return "triangulo-rgb";
     default:
         return "desconocida";
     }

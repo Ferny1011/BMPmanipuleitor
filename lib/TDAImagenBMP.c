@@ -24,7 +24,6 @@ int crearMatPixeles(TDA_Matriz* mat, int columnas, int filas){
 
 TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
     TDA_ImagenBMP* imagen = NULL;
-    PixelRGB *filaSinRelleno = NULL;
     FILE *imgFile = NULL;
     int i, padding;
 
@@ -32,14 +31,15 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
     if ( !imagen ) {
         return NULL;
     }
+
     imgFile = fopen(nombreArchivo, "rb");
     if ( !imgFile ) {
         puts("Error al abrir el archivo de imagen");
         free(imagen);
         return NULL;
     }
+
     fread(&imagen->cabecera, sizeof(BmpHeader), 1, imgFile);
-    //chequear la firma BM, cheaquear 24bits, prof = 1, compresion = 0
     if ( imagen->cabecera.firma[0] != 'B' || imagen->cabecera.firma[1] != 'M' ||
          imagen->cabecera.profundidad != 24 || imagen->cabecera.compresion != 0 ) {
         puts("El archivo no es un BMP soportado (24 bits sin compresion)");
@@ -47,7 +47,7 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
         free(imagen);
         return NULL;
     }
-    // reservar memoria para la matriz de pixeles
+
     imagen->matrizDePixeles = (TDA_Matriz*)malloc(sizeof(TDA_Matriz));
     if ( !imagen->matrizDePixeles ) {
         puts("Error al reservar memoria para la matriz de pixeles");
@@ -55,22 +55,21 @@ TDA_ImagenBMP* crearImagenBMP(const char *nombreArchivo){
         free(imagen);
         return NULL;
     }
-    // crear la matriz de pixeles
+
     if ( !crearMatPixeles(imagen->matrizDePixeles, imagen->cabecera.anchura, imagen->cabecera.altura) ) {
         puts("Error al crear la matriz de pixeles");
         fclose(imgFile);
-        free(imagen);
-        free(imagen->matrizDePixeles);
+        liberarImagenBMP(imagen);
         return NULL;
     }
-    // calcular el padding de la imagen
-    padding = (4 - (imagen->cabecera.anchura * sizeof(PixelRGB) % 4)) % 4;
 
+    padding = (4 - (imagen->cabecera.anchura * sizeof(PixelRGB) % 4)) % 4;
     fseek(imgFile, imagen->cabecera.dataOffset, SEEK_SET);
     for (i = 0; i < imagen->cabecera.altura; i++) {
         fread(imagen->matrizDePixeles->data[i], sizeof(PixelRGB), imagen->cabecera.anchura, imgFile);
         fseek(imgFile, padding, SEEK_CUR);
     }
+
     fclose(imgFile);
     return imagen;
 }
