@@ -4,7 +4,7 @@
 #include "funciones_grupo.h"
 #include "funciones_zapata.h"
 
-
+void ejecutarOperaciones(OpcionesImagen *opciones);
 
 TDA_ImagenBMP *concatenarImagenVertical (TDA_ImagenBMP *imagenSuperior, TDA_ImagenBMP *imagenInferior);
 
