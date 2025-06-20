@@ -6,15 +6,15 @@
 /**
 * Apellido(s), nombre(s): Quiroga, Ferney
 * DNI: 95933227
-* Entrega: Sí.
+* Entrega: Sí
 *
 * Apellido(s), nombre(s): Zapata, Santiago
 * DNI: 44525943
-* Entrega: Si.
+* Entrega: Sí
 *
-* Apellido(s), nombre(s):
-* DNI: (sólo números, sin puntos)
-* Entrega: Sí/No.
+* Apellido(s), nombre(s): Lazaro, Fernando Ariel
+* DNI: 40853793
+* Entrega: Sí
 */
 
 int main(int argc, char* argv[]){

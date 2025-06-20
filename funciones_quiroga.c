@@ -123,7 +123,7 @@ void ejecutarOperaciones(OpcionesImagen *opciones) {
                 rotarIzquierda(imagenCopia);
                 break;
             case OP_RECORTAR:
-                imagenCopia= recortar(imagenOriginal, (100 - opciones->operaciones[i].valor));
+                imagenCopia= recortar(imagenOriginal, opciones->operaciones[i].valor);
                 break;
             case OP_ACHICAR:
                 imagenCopia= achicar(imagenOriginal, opciones->operaciones[i].valor);
