@@ -3,6 +3,7 @@
 
 #include "funciones_grupo.h"
 #include "funciones_zapata.h"
+#include "funciones_lazaro.h"
 
 void ejecutarOperaciones(OpcionesImagen *opciones);
 

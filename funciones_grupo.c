@@ -1,6 +1,7 @@
 #include "funciones_grupo.h"
 #include "funciones_zapata.h"
 #include "funciones_quiroga.h"
+#include "funciones_lazaro.h"
 
 /**
 * Apellido(s), nombre(s): Quiroga, Ferney

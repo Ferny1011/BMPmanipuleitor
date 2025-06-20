@@ -122,6 +122,12 @@ void ejecutarOperaciones(OpcionesImagen *opciones) {
             case OP_ROTAR_IZQUIERDA:
                 rotarIzquierda(imagenCopia);
                 break;
+            case OP_RECORTAR:
+                imagenCopia= recortar(imagenOriginal, (100 - opciones->operaciones[i].valor));
+                break;
+            case OP_ACHICAR:
+                imagenCopia= achicar(imagenOriginal, opciones->operaciones[i].valor);
+                break;
             default:
                 printf("Error: Operacion desconocida.\n");
                 break;
@@ -157,11 +163,11 @@ TDA_ImagenBMP *concatenarImagenVertical (TDA_ImagenBMP *imagenSuperior, TDA_Imag
     }
     imagenConcatenada->cabecera = imagenSuperior->cabecera;
     imagenConcatenada->cabecera.altura = imagenSuperior->cabecera.altura + imagenInferior->cabecera.altura;
-    imagenConcatenada->cabecera.anchura = imagenSuperior->cabecera.anchura > imagenInferior->cabecera.anchura ? 
+    imagenConcatenada->cabecera.anchura = imagenSuperior->cabecera.anchura > imagenInferior->cabecera.anchura ?
         imagenSuperior->cabecera.anchura : imagenInferior->cabecera.anchura;
     imagenConcatenada->cabecera.tamImagen = imagenConcatenada->cabecera.anchura * imagenConcatenada->cabecera.altura * sizeof(PixelRGB);
     imagenConcatenada->cabecera.tamArchivo = sizeof(BmpHeader) + imagenConcatenada->cabecera.tamImagen;
-    
+
     imagenConcatenada->matrizDePixeles = (TDA_Matriz*)malloc(sizeof(TDA_Matriz));
     if (!imagenConcatenada->matrizDePixeles) {
         puts("Error al reservar memoria para la matriz de pixeles de la imagen concatenada.");
