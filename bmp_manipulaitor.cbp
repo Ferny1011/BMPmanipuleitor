@@ -11,7 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="resources/imagen.bmp resources/img.bmp --funcionalidad-extra --concatenar-vertical --negativo" />
+				<Option parameters="resources/imagen.bmp resources/img.bmp --comodin --concatenar-vertical --tonalidad-roja=80" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -36,6 +36,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="funciones_grupo.h" />
+		<Unit filename="funciones_lazaro.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="funciones_lazaro.h" />
 		<Unit filename="funciones_quiroga.c">
 			<Option compilerVar="CC" />
 		</Unit>

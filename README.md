@@ -111,7 +111,7 @@ bmp_manipuleitor.exe <imagen_entrada> [imagen_adicional] [opciones]
 #### Funcionalidad Especial
 | Operación | Descripción |
 |-----------|-------------|
-| `--funcionalidad-extra` | Aplica todas las operaciones especificadas en cadena sobre la misma imagen |
+| `--comodin` | Aplica todas las operaciones especificadas en cadena sobre la misma imagen |
 
 ### Archivos de Salida
 
@@ -166,10 +166,10 @@ bmp_manipuleitor.exe unlam.bmp --negativo --escala-de-grises --argumento-incorre
 
 ### Ejemplo 6: Funcionalidad extra
 ```bash
-bmp_manipuleitor.exe imagen.bmp --funcionalidad-extra --tonalidad-roja=40 --tonalidad-azul=40 --rotar-derecha
+bmp_manipuleitor.exe imagen.bmp --comodin --tonalidad-roja=40 --tonalidad-azul=40 --rotar-derecha
 ```
 **Genera:**
-- `LUMEN_funcionalidad-extra_imagen.bmp` (con todos los filtros aplicados en cadena)
+- `LUMEN_comodin_imagen.bmp` (con todos los filtros aplicados en cadena)
 
 ## Comportamiento del Sistema
 
@@ -184,7 +184,7 @@ bmp_manipuleitor.exe imagen.bmp --funcionalidad-extra --tonalidad-roja=40 --tona
 ### Características Especiales
 - **Múltiples operaciones**: Se pueden ejecutar varias modificaciones en un solo llamado
 - **Archivos independientes**: Cada operación genera su propio archivo de salida
-- **Modo extra**: Con `--funcionalidad-extra`, todas las operaciones se aplican secuencialmente a la misma imagen
+- **Modo extra**: Con `--comodin`, todas las operaciones se aplican secuencialmente a la misma imagen
 - **Relleno inteligente**: En concatenaciones, se usa color verde para rellenar diferencias de tamaño
 
 ### Limitaciones

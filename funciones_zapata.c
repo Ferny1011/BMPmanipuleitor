@@ -67,18 +67,6 @@ void espejarHorizontal(TDA_ImagenBMP *imagen)
     }    
 }
 
-// *--->               generica                   <---
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-//    [1f][2f][3f][4f][5f][6f][7][6][5][4][3][2][1]
-
 void rotarDerecha(TDA_ImagenBMP *imagen)
 {
     _rotarMatriz(imagen, DERECHA);
@@ -265,7 +253,7 @@ void mostrarAyuda()
            "  --espejar-vertical           Espeja verticalmente\n"
            "  --concatenar-horizontal      Concatena dos imagenes horizontalmente (requiere 2 imagenes)\n"
            "  --concatenar-vertical        Concatena dos imagenes verticalmente (requiere 2 imagenes)\n"
-           "  --funcionalidad-extra        Aplica todas las operaciones especificadas a la misma imagen\n\n"
+           "  --comodin        Aplica todas las operaciones especificadas a la misma imagen\n\n"
            "Opciones con valores (formato: --opcion=valor):\n"
            "  --tonalidad-azul[=%%]        Ajusta tonalidad azul (defecto: 10)\n"
            "  --tonalidad-roja[=%%]        Ajusta tonalidad roja (defecto: 10)\n"
@@ -278,7 +266,7 @@ void mostrarAyuda()
            "Comportamiento:\n"
            "  - Cada operacion genera un archivo separado: LUMEN_<operacion>_<imagen>.bmp\n"
            "  - Las operaciones duplicadas se ejecutan solo una vez\n"
-           "  - Si se incluye --funcionalidad-extra, todas las operaciones se aplican en cadena\n"
+           "  - Si se incluye --comodin, todas las operaciones se aplican en cadena\n"
            "    sobre la misma imagen, y se genera un solo archivo de salida\n"
            "  - Los argumentos incorrectos se ignoran con advertencia\n"
            "  - Si una operacion falla, se continua con las demas\n"
@@ -290,8 +278,8 @@ void mostrarAyuda()
            "    Genera: LUMEN_aumentar-contraste_imagen.bmp, LUMEN_tonalidad-azul_imagen.bmp\n\n"
            "  bmpmanipuleitor.exe img1.bmp img2.bmp --concatenar-vertical\n"
            "    Genera: LUMEN_concatenar-vertical_img1.bmp\n\n"
-           "  bmpmanipuleitor.exe imagen.bmp --funcionalidad-extra --tonalidad-roja=40 --tonalidad-azul=40 --rotar-derecha\n"
-           "    Genera: LUMEN_funcionalidad-extra_imagen.bmp con todos los filtros aplicados en cadena\n\n");
+           "  bmpmanipuleitor.exe imagen.bmp --comodin --tonalidad-roja=40 --tonalidad-azul=40 --rotar-derecha\n"
+           "    Genera: LUMEN_comodin_imagen.bmp con todos los filtros aplicados en cadena\n\n");
 }
 
 void parse_argv(int argc, char *argv[], OpcionesImagen *opciones)
@@ -341,7 +329,7 @@ void parse_argv(int argc, char *argv[], OpcionesImagen *opciones)
             agregarOperacion(opciones, OP_CONCATENAR_HORIZONTAL, valor);
         else if (!strcmp(argumentoActual, "--concatenar-vertical"))
             agregarOperacion(opciones, OP_CONCATENAR_VERTICAL, valor);
-        else if (!strcmp(argumentoActual, "--funcionalidad-extra"))
+        else if (!strcmp(argumentoActual, "--comodin"))
             agregarOperacion(opciones, OP_FUNCIONALIDAD_EXTRA, valor);
         else if (!strcmp(argumentoActual, "--triangulo-rgb"))
             agregarOperacion(opciones, OP_TRIANGULO_RGB, valor);
@@ -424,7 +412,7 @@ const char *obtenerNombreOperacion(TipoOperacion operacion)
     case OP_CONCATENAR_VERTICAL:
         return "concatenar-vertical";
     case OP_FUNCIONALIDAD_EXTRA:
-        return "funcionalidad-extra";
+        return "comodin";
     case OP_TRIANGULO_RGB:
         return "triangulo-rgb";
     default:

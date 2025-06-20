@@ -10,7 +10,7 @@ TDA_ImagenBMP* recortar(TDA_ImagenBMP* original, int porcentaje) {
     int nuevoAlto  = (int)(original->cabecera.altura  * (porcentaje / 100.0));
 
     if (nuevoAncho <= 0 || nuevoAlto <= 0) {
-        printf("Error: Las nuevas dimensiones del recorte son inválidas.\n");
+        printf("Error: Las nuevas dimensiones del recorte son invï¿½lidas.\n");
         return NULL;
     }
 
@@ -35,7 +35,7 @@ TDA_ImagenBMP* recortar(TDA_ImagenBMP* original, int porcentaje) {
 
     recortada->matrizDePixeles = (TDA_Matriz *)malloc(sizeof(TDA_Matriz));
     if (!recortada->matrizDePixeles) {
-        printf("Error: No se pudo reservar memoria para la matriz de píxeles.\n");
+        printf("Error: No se pudo reservar memoria para la matriz de pï¿½xeles.\n");
         free(recortada);
         return NULL;
     }
@@ -61,7 +61,7 @@ TDA_ImagenBMP* recortar(TDA_ImagenBMP* original, int porcentaje) {
 TDA_ImagenBMP* achicar(TDA_ImagenBMP* original, int porcentaje) {
 
     if (!original || porcentaje <= 0 || porcentaje > 100) {
-        printf("Error: Imagen nula o porcentaje inválido.\n");
+        printf("Error: Imagen nula o porcentaje invï¿½lido.\n");
         return NULL;
     }
 
@@ -75,7 +75,7 @@ TDA_ImagenBMP* achicar(TDA_ImagenBMP* original, int porcentaje) {
 
 
     if (nuevoAncho <= 0 || nuevoAlto <= 0) {
-        printf("Error: Dimensiones finales inválidas.\n");
+        printf("Error: Dimensiones finales invï¿½lidas.\n");
         return NULL;
     }
 
@@ -102,14 +102,14 @@ TDA_ImagenBMP* achicar(TDA_ImagenBMP* original, int porcentaje) {
 
     achicada->matrizDePixeles = malloc(sizeof(TDA_Matriz));
     if (!achicada->matrizDePixeles) {
-        printf("Error: No se pudo reservar memoria para la matriz de píxeles.\n");
+        printf("Error: No se pudo reservar memoria para la matriz de pï¿½xeles.\n");
         free(achicada);
         return NULL;
     }
 
 
     if (!crearMatPixeles(achicada->matrizDePixeles, nuevoAncho, nuevoAlto)) {
-        printf("Error al crear la matriz de píxeles achicada.\n");
+        printf("Error al crear la matriz de pï¿½xeles achicada.\n");
         free(achicada->matrizDePixeles);
         free(achicada);
         return NULL;
