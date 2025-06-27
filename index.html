@@ -5,15 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BMPManipulator - Showcase del Proyecto</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chosen Palette: Slate & Indigo - A professional and clean combination for a technical showcase. -->
-    <!-- Application Structure Plan: A single-page, vertical-scrolling layout designed as an interactive explainer for the 'bmpmanipuleitor' C project. The structure includes: 1. Header, 2. Interactive Demo (core feature), 3. Technical Deep Dive (BMP Header, Matrix Formulas), and 4. Project Architecture. This structure guides the user from a high-level demonstration to low-level technical details, facilitating a comprehensive understanding of the project in a logical, explorable flow. -->
-    <!-- Visualization & Content Choices: 
-        - Goal: Demonstrate Functionality -> Method: Interactive Canvas Demo with controls (buttons/sliders) and dynamic command-line generation. Interaction: Real-time visual feedback. Justification: Most effective way to show what the tool does. Library: Vanilla JS + HTML5 Canvas.
-        - Goal: Explain Technical Concepts -> Method: Interactive diagrams for BMP Header and Matrix formulas using HTML/CSS. Interaction: Hover tooltips and clickable animations. Justification: Makes dense technical info digestible and engaging. Library: Vanilla JS.
-        - Goal: Show Code Structure -> Method: Simple flowchart-style diagram using HTML/CSS grid. Interaction: Clickable elements. Justification: Visualizes modularity without overwhelming with full code. Library: Vanilla JS.
-        - Goal: Generate Creative Filter Ideas -> Method: LLM (Gemini API) text generation based on user prompt. Interaction: Button click, text output. Justification: Adds an AI-powered "wow" factor, demonstrates extensibility of the tool. Library: Gemini API (fetch).
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; /* slate-50 */ }
@@ -63,7 +54,7 @@
         <!-- Interactive Demo -->
         <section id="demo" class="mb-24 scroll-mt-20">
             <h3 class="text-4xl font-bold text-center text-slate-800 mb-2">Demo Interactiva</h3>
-            <p class="text-center text-slate-600 mb-12 max-w-2xl mx-auto">Sube tu propia imagen o usa la de ejemplo. Aplica los filtros y observa el resultado en tiempo real. El comando de terminal correspondiente se generará automáticamente.</p>
+            <p class="text-center text-slate-600 mb-12 max-w-2xl mx-auto">Sube tu propia imagen. Aplica los filtros y observa el resultado en tiempo real. El comando de terminal correspondiente se generará automáticamente.</p>
             
             <div class="grid md:grid-cols-2 gap-12 items-start">
                 <!-- Controls -->
@@ -148,12 +139,13 @@
                             <p class="text-indigo-600">Haz clic para ver la transformación.</p>
                          </div>
                          <div class="mt-2 p-3 bg-slate-100 rounded-lg command-line text-sm">
-                             <p><strong class="text-indigo-600">Izquierda:</strong> F<sub>nueva</sub> = H - C<sub>orig</sub> - 1, C<sub>nueva</sub> = F<sub>orig</sub></p>
+                             <p><strong class="text-indigo-600">Izquierda:</strong> F<sub>nueva</sub> = W - C<sub>orig</sub> - 1, C<sub>nueva</sub> = F<sub>orig</sub></p>
                              <p><strong class="text-indigo-600">Derecha:</strong> F<sub>nueva</sub> = C<sub>orig</sub>, C<sub>nueva</sub> = H - F<sub>orig</sub> - 1</p>
                             <div class="mt-2 text-xs text-slate-500">
                                 <span class="inline-block mr-2"><strong>F</strong>: Fila</span>
                                 <span class="inline-block mr-2"><strong>C</strong>: Columna</span>
                                 <span class="inline-block"><strong>H</strong>: Altura</span>
+                                <span class="inline-block"><strong>W</strong>: Anchura</span>
                             </div>
                              <p></p>
                          </div>

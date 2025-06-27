@@ -201,15 +201,15 @@ void imagenTrianguloRGB(TDA_ImagenBMP *imagen, float rojo, float verde, float az
                 imagen->matrizDePixeles->data[i][j] = pixelNegro;
 
             // triangulo izquierdo
-            if (anchura - 1 >= j + i && i >= j)
+            if (i >= j && i + j <= anchura - 1)
                 imagen->matrizDePixeles->data[i][j].r = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].r * rojo);
 
             // triangulo derecho
-            if (anchura - 1 - i <= j && i <= j)
+            if (i <= j && i + j <= anchura - 1)
                 imagen->matrizDePixeles->data[i][j].g = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].g * verde);
 
             // triangulo inferior
-            if (anchura - 1 - i >= j && i <= j)
+            if (i <= j && i + j >= anchura - 1)
                 imagen->matrizDePixeles->data[i][j].b = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].b * azul);
         }
 }
