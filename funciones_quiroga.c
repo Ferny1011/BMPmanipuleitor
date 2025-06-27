@@ -128,6 +128,9 @@ void ejecutarOperaciones(OpcionesImagen *opciones) {
             case OP_ACHICAR:
                 imagenCopia= achicar(imagenOriginal, opciones->operaciones[i].valor);
                 break;
+            case OP_TRIANGULO_RGB:
+                imagenTrianguloRGB(imagenCopia, 1.5f, 1.5f, 1.5f);
+                break;
             default:
                 printf("Error: Operacion desconocida.\n");
                 break;
@@ -312,6 +315,8 @@ void aplicarFiltrosEnCadena(TDA_ImagenBMP *imagen, OperacionImagen *operaciones,
                 tmp->matrizDePixeles = NULL;
                 free(tmp);
             }
+        } else if (op == OP_TRIANGULO_RGB) {
+            imagenTrianguloRGB(imagen, 1.5f, 1.5f, 1.5f);
         } else {
             printf("Operacion '%d' no soportada o imagen2 faltante.\n", (int)op);
         }

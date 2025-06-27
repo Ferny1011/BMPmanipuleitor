@@ -201,7 +201,7 @@ void imagenTrianguloRGB(TDA_ImagenBMP *imagen, float rojo, float verde, float az
                 imagen->matrizDePixeles->data[i][j] = pixelNegro;
 
             // triangulo izquierdo
-            if (anchura - 1 - i >= j && i >= j)
+            if (anchura - 1 >= j + i && i >= j)
                 imagen->matrizDePixeles->data[i][j].r = (uint8_t)_min(255, imagen->matrizDePixeles->data[i][j].r * rojo);
 
             // triangulo derecho
@@ -253,6 +253,7 @@ void mostrarAyuda()
            "  --espejar-vertical           Espeja verticalmente\n"
            "  --concatenar-horizontal      Concatena dos imagenes horizontalmente (requiere 2 imagenes)\n"
            "  --concatenar-vertical        Concatena dos imagenes verticalmente (requiere 2 imagenes)\n"
+           "  --triangulo-rgb              Aplica filtros de color por regiones triangulares\n"
            "  --comodin        Aplica todas las operaciones especificadas a la misma imagen\n\n"
            "Opciones con valores (formato: --opcion=valor):\n"
            "  --tonalidad-azul[=%%]        Ajusta tonalidad azul (defecto: 10)\n"

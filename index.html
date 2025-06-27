@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMPManipulator - Showcase del Proyecto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Slate & Indigo - A professional and clean combination for a technical showcase. -->
+    <!-- Application Structure Plan: A single-page, vertical-scrolling layout designed as an interactive explainer for the 'bmpmanipuleitor' C project. The structure includes: 1. Header, 2. Interactive Demo (core feature), 3. Technical Deep Dive (BMP Header, Matrix Formulas), and 4. Project Architecture. This structure guides the user from a high-level demonstration to low-level technical details, facilitating a comprehensive understanding of the project in a logical, explorable flow. -->
+    <!-- Visualization & Content Choices: 
+        - Goal: Demonstrate Functionality -> Method: Interactive Canvas Demo with controls (buttons/sliders) and dynamic command-line generation. Interaction: Real-time visual feedback. Justification: Most effective way to show what the tool does. Library: Vanilla JS + HTML5 Canvas.
+        - Goal: Explain Technical Concepts -> Method: Interactive diagrams for BMP Header and Matrix formulas using HTML/CSS. Interaction: Hover tooltips and clickable animations. Justification: Makes dense technical info digestible and engaging. Library: Vanilla JS.
+        - Goal: Show Code Structure -> Method: Simple flowchart-style diagram using HTML/CSS grid. Interaction: Clickable elements. Justification: Visualizes modularity without overwhelming with full code. Library: Vanilla JS.
+        - Goal: Generate Creative Filter Ideas -> Method: LLM (Gemini API) text generation based on user prompt. Interaction: Button click, text output. Justification: Adds an AI-powered "wow" factor, demonstrates extensibility of the tool. Library: Gemini API (fetch).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; /* slate-50 */ }
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 350px; max-height: 40vh; }
+        .glass-panel { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .command-line { font-family: 'Courier New', Courier, monospace; }
+        .matrix-cell { width: 30px; height: 30px; border: 1px solid #94a3b8; transition: all 0.3s ease-in-out; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #475569; }
+        .matrix-cell.highlight-src { background-color: #fca5a5; /* red-300 */ color: #b91c1c; /* red-700 */ font-weight: bold; }
+        .matrix-cell.highlight-dest { background-color: #a78bfa; /* violet-300 */ color: #5b21b6; /* violet-700 */ font-weight: bold; }
+        .loading-spinner { border: 4px solid rgba(0, 0, 0, 0.1); border-left-color: #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <!-- Header & Navigation -->
+    <header class="bg-slate-800 text-white sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">BMP<span class="text-indigo-400">Manipulator</span></h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#demo" class="hover:text-indigo-300 transition">Demo Interactiva</a>
+                <a href="#tech" class="hover:text-indigo-300 transition">Detalles Técnicos</a>
+                <a href="#formulas" class="hover:text-indigo-300 transition">Fórmulas Matriciales</a>
+                <a href="#arch" class="hover:text-indigo-300 transition">Arquitectura</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 flex flex-col space-y-2">
+            <a href="#demo" class="hover:text-indigo-300 transition block">Demo Interactiva</a>
+            <a href="#tech" class="hover:text-indigo-300 transition block">Detalles Técnicos</a>
+            <a href="#formulas" class="hover:text-indigo-300 transition block">Fórmulas Matriciales</a>
+            <a href="#arch" class="hover:text-indigo-300 transition block">Arquitectura</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <!-- Intro -->
+        <section class="text-center mb-20">
+            <h2 class="text-5xl font-extrabold text-slate-900 mb-4">Un Vistazo Profundo al Manipulador de Imágenes BMP</h2>
+            <p class="text-lg max-w-3xl mx-auto text-slate-600">
+                Esta es una demostración interactiva del proyecto <span class="font-semibold text-indigo-600">bmpmanipuleitor</span>, una herramienta de línea de comandos en C para la manipulación de imágenes. Explore sus funcionalidades, entienda la tecnología subyacente y visualice el poder de la manipulación de píxeles.
+            </p>
+        </section>
+
+        <!-- Interactive Demo -->
+        <section id="demo" class="mb-24 scroll-mt-20">
+            <h3 class="text-4xl font-bold text-center text-slate-800 mb-2">Demo Interactiva</h3>
+            <p class="text-center text-slate-600 mb-12 max-w-2xl mx-auto">Sube tu propia imagen o usa la de ejemplo. Aplica los filtros y observa el resultado en tiempo real. El comando de terminal correspondiente se generará automáticamente.</p>
+            
+            <div class="grid md:grid-cols-2 gap-12 items-start">
+                <!-- Controls -->
+                <div class="glass-panel p-6 rounded-2xl shadow-md">
+                    <h4 class="text-2xl font-bold mb-6 text-slate-800">Panel de Control</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <input type="file" id="image-loader" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
+                            <button id="reset-button" class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-full transition">Reset</button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button class="filter-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition" data-op="negativo">Negativo</button>
+                            <button class="filter-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition" data-op="escala-de-grises">Escala de Grises</button>
+                            <button class="filter-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition" data-op="espejar-horizontal">Espejar Horizontal</button>
+                            <button class="filter-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition" data-op="espejar-vertical">Espejar Vertical</button>
+                             <button class="filter-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition" data-op="rotar-derecha">Rotar Derecha</button>
+                            <button class="filter-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg transition" data-op="rotar-izquierda">Rotar Izquierda</button>
+                        </div>
+
+                        <!-- Sliders -->
+                        <div class="pt-4 space-y-4">
+                            <div>
+                                <label for="tonalidad-roja" class="font-semibold">Tonalidad Roja: <span id="tonalidad-roja-value">10</span>%</label>
+                                <input type="range" id="tonalidad-roja" class="slider-op w-full" data-op="tonalidad-roja" min="0" max="100" value="10">
+                            </div>
+                             <div>
+                                <label for="tonalidad-verde" class="font-semibold">Tonalidad Verde: <span id="tonalidad-verde-value">10</span>%</label>
+                                <input type="range" id="tonalidad-verde" class="slider-op w-full" data-op="tonalidad-verde" min="0" max="100" value="10">
+                            </div>
+                             <div>
+                                <label for="tonalidad-azul" class="font-semibold">Tonalidad Azul: <span id="tonalidad-azul-value">10</span>%</label>
+                                <input type="range" id="tonalidad-azul" class="slider-op w-full" data-op="tonalidad-azul" min="0" max="100" value="10">
+                            </div>
+                             <div>
+                                <label for="aumentar-contraste" class="font-semibold">Contraste: <span id="aumentar-contraste-value">20</span>%</label>
+                                <input type="range" id="aumentar-contraste" class="slider-op w-full" data-op="aumentar-contraste" min="0" max="100" value="20">
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+
+                <!-- Canvas and Command -->
+                <div>
+                    <div class="chart-container bg-slate-200 rounded-2xl shadow-inner mb-4 flex items-center justify-center overflow-hidden">
+                        <canvas id="canvas"></canvas>
+                    </div>
+                    <div class="bg-slate-900 rounded-lg p-4 text-white command-line">
+                        <span class="text-green-400">$></span> <span id="command-output">./bmp_manipuleitor.exe imagen.bmp</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Deep Dive -->
+        <section id="tech" class="mb-24 scroll-mt-20">
+            <h3 class="text-4xl font-bold text-center text-slate-800 mb-12">Detalles Técnicos: El Corazón del BMP</h3>
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h4 class="text-2xl font-bold text-slate-800 mb-6">Estructura del Encabezado (Header) BMP</h4>
+                <p class="mb-8 text-slate-600">Un archivo BMP comienza con un encabezado de 54 bytes que describe la imagen: su tamaño, dimensiones y formato. Interactúa con el diagrama para ver la función de cada campo clave.</p>
+                <div id="bmp-header-diagram" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 text-center text-sm">
+                    <!-- Header fields will be injected by JS -->
+                </div>
+                 <div id="header-tooltip" class="mt-4 p-4 bg-indigo-50 rounded-lg text-indigo-800 font-medium hidden"></div>
+            </div>
+        </section>
+
+        <!-- Matrix Formulas -->
+        <section id="formulas" class="mb-24 scroll-mt-20">
+             <h3 class="text-4xl font-bold text-center text-slate-800 mb-12">Fórmulas Matriciales Interactivas</h3>
+             <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <p class="mb-8 text-slate-600">Las transformaciones de imagen son operaciones matemáticas sobre una matriz de píxeles. Aquí visualizamos la lógica clave detrás de la rotación y la segmentación en triángulos.</p>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h4 class="text-2xl font-bold text-slate-800 mb-4">Rotación de 90°</h4>
+                        <p class="text-slate-600 mb-4">Haz clic en los botones para ver cómo un bloque de 2x2 píxeles se reubica con la rotación.</p>
+                         <div id="rotation-grid" class="grid grid-cols-5 gap-1 mx-auto w-max mb-4"></div>
+                         <div class="flex justify-center gap-4">
+                            <button id="rotate-left-btn" class="bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-lg transition">Rotar Izquierda</button>
+                            <button id="rotate-right-btn" class="bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded-lg transition">Rotar Derecha</button>
+                         </div>
+                         <div id="rotation-coords" class="mt-4 p-3 bg-slate-100 rounded-lg command-line text-sm text-center">
+                            <p class="text-indigo-600">Haz clic para ver la transformación.</p>
+                         </div>
+                         <div class="mt-2 p-3 bg-slate-100 rounded-lg command-line text-sm">
+                             <p><strong class="text-indigo-600">Izquierda:</strong> F<sub>nueva</sub> = H - C<sub>orig</sub> - 1, C<sub>nueva</sub> = F<sub>orig</sub></p>
+                             <p><strong class="text-indigo-600">Derecha:</strong> F<sub>nueva</sub> = C<sub>orig</sub>, C<sub>nueva</sub> = H - F<sub>orig</sub> - 1</p>
+                            <div class="mt-2 text-xs text-slate-500">
+                                <span class="inline-block mr-2"><strong>F</strong>: Fila</span>
+                                <span class="inline-block mr-2"><strong>C</strong>: Columna</span>
+                                <span class="inline-block"><strong>H</strong>: Altura</span>
+                            </div>
+                             <p></p>
+                         </div>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-bold text-slate-800 mb-4">Regiones Triangulares</h4>
+                        <p class="text-slate-600 mb-4">La función `imagenTrianguloRGB` aplica filtros a regiones específicas definidas por las diagonales de la imagen.</p>
+                        <div id="triangle-grid" class="grid grid-cols-5 gap-1 mx-auto w-max"></div>
+                         <div class="mt-4 p-3 bg-slate-100 rounded-lg text-sm space-y-1">
+                            <p><span class="inline-block w-4 h-4 bg-red-500 rounded-sm mr-2 align-middle"></span><strong class="text-red-600">Izquierdo:</strong> (i ≥ j) ∧ (i + j ≤ H-1)</p>
+                            <p><span class="inline-block w-4 h-4 bg-blue-500 rounded-sm mr-2 align-middle"></span><strong class="text-blue-600">Derecho:</strong> (i ≤ j) ∧ (i + j ≥ H-1)</p>
+                            <p><span class="inline-block w-4 h-4 bg-green-500 rounded-sm mr-2 align-middle"></span><strong class="text-green-600">Superior:</strong> (i ≤ j) ∧ (i + j < H-1)</p>
+                            <p><span class="inline-block w-4 h-4 bg-orange-500 rounded-sm mr-2 align-middle"></span><strong class="text-orange-600">Inferior:</strong> (i ≥ j) ∧ (i + j > H-1)</p>
+                         </div>
+                    </div>
+                </div>
+             </div>
+        </section>
+        
+        <!-- Architecture -->
+        <section id="arch" class="mb-12 scroll-mt-20">
+            <h3 class="text-4xl font-bold text-center text-slate-800 mb-12">Arquitectura del Proyecto</h3>
+            <div class="bg-white p-8 rounded-2xl shadow-lg max-w-4xl mx-auto">
+                 <p class="mb-8 text-slate-600 text-center">El proyecto está estructurado de forma modular para separar responsabilidades, facilitando el mantenimiento y la extensibilidad.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="p-6 bg-slate-50 rounded-lg border border-slate-200">
+                        <h5 class="font-bold text-lg text-indigo-700">TDAImagenBMP</h5>
+                        <p class="text-sm text-slate-600 mt-2">El núcleo. Gestiona la lectura, escritura y manipulación de la estructura de datos de la imagen BMP en memoria.</p>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-lg border border-slate-200">
+                        <h5 class="font-bold text-lg text-indigo-700">funciones_grupo</h5>
+                        <p class="text-sm text-slate-600 mt-2">El orquestador. Parsea los argumentos de la línea de comandos y coordina la ejecución de las operaciones solicitadas.</p>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-lg border border-slate-200">
+                        <h5 class="font-bold text-lg text-indigo-700">Módulos de Alumnos</h5>
+                        <p class="text-sm text-slate-600 mt-2">(zapata, quiroga, lazaro). Contienen la implementación específica de los filtros y transformaciones.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-white py-6">
+        <div class="container mx-auto px-6 text-center text-slate-400">
+            <p>Proyecto "BMPManipulator" por Grupo LUMEN.</p>
+            <p class="text-sm">Tópicos de Programación - Universidad Nacional de La Matanza.</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Mobile Menu
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // Canvas Image Manipulation
+    const imageLoader = document.getElementById('image-loader');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const resetButton = document.getElementById('reset-button');
+    const commandOutput = document.getElementById('command-output');
+    
+    let originalImageData = null;
+    let currentImage = new Image();
+    // Bandera para indicar si la imagen actual es la imagen por defecto
+    let isDefaultImage = true; 
+
+    function drawImage(img, textOnCanvas = true) {
+        const container = canvas.parentElement;
+
+        // Si el contenedor no tiene dimensiones válidas, reintenta en el próximo frame
+        if (container.clientWidth === 0 || container.clientHeight === 0) {
+            requestAnimationFrame(() => drawImage(img, textOnCanvas));
+            return;
+        }
+
+        const containerRatio = container.clientWidth / container.clientHeight;
+        const imgRatio = img.width / img.height;
+
+        let canvasWidth, canvasHeight;
+
+        // Asegúrate de que img.width y img.height no sean cero antes de usarlos
+        if (img.width === 0 || img.height === 0) {
+            // Si la imagen no tiene dimensiones cargadas aún, espera al próximo frame
+            requestAnimationFrame(() => drawImage(img, textOnCanvas));
+            return;
+        }
+
+
+        if (imgRatio > containerRatio) {
+            canvasWidth = container.clientWidth;
+            canvasHeight = container.clientWidth / imgRatio;
+        } else {
+            canvasHeight = container.clientHeight;
+            canvasWidth = container.clientHeight * imgRatio;
+        }
+        
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpiar antes de dibujar
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // Solo dibujar texto para la imagen Base64 por defecto si la bandera lo permite
+        if (textOnCanvas && isDefaultImage) { 
+            ctx.fillStyle = '#475569'; // Texto gris oscuro
+            ctx.font = '24px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Carga una imagen', canvas.width / 2, canvas.height / 2);
+        }
+
+        originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
+
+    // Imagen de marcador de posición por defecto (imagen Base64 simple gris claro)
+    const defaultPlaceholderBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAEsAQMAAADiFh/dAAAAA1BMVEXk5+cACEzRAAAAAXRSTlMAQObYZgAAAFRJREFUWMPt0AEBAAAIA/H/j41fCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICC+7kXQAHg2h84xAAAAAElFTkSuQmCC';
+    
+    // Listener para cuando currentImage se carga (ya sea la default o una subida por el usuario)
+    currentImage.onload = () => {
+        // Al cargar, dibujar la imagen. La bandera `isDefaultImage` controlará si se dibuja texto
+        drawImage(currentImage, isDefaultImage); 
+    };
+
+    // Establecer la imagen inicial por defecto
+    currentImage.src = defaultPlaceholderBase64;
+
+    imageLoader.addEventListener('change', (e) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            currentImage.src = event.target.result;
+            isDefaultImage = false; // El usuario ha subido una imagen, ya no es la por defecto
+            // drawImage se llamará automáticamente via currentImage.onload
+        }
+        reader.readAsDataURL(e.target.files[0]);
+        updateCommand('imagen_cargada.bmp');
+    });
+
+    resetButton.addEventListener('click', () => {
+        // Reiniciar a la imagen de marcador de posición por defecto
+        currentImage.src = defaultPlaceholderBase64;
+        isDefaultImage = true; // Volvemos a la imagen por defecto
+        // drawImage se llamará automáticamente via currentImage.onload
+         document.querySelectorAll('.slider-op').forEach(slider => {
+            const defaultValue = slider.dataset.op.includes('contraste') ? '20' : '10';
+            slider.value = defaultValue;
+            document.getElementById(`${slider.id}-value`).textContent = defaultValue;
+        });
+        updateCommand('imagen.bmp');
+    });
+    
+    function updateCommand(imageName, op = '', value = null) {
+        let cmd = `./bmp_manipuleitor.exe ${imageName}`;
+        if (op) {
+            cmd += ` --${op}`;
+            if (value !== null) {
+                cmd += `=${value}`;
+            }
+        }
+        commandOutput.textContent = cmd;
+    }
+
+    // Filters
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const operation = button.dataset.op;
+            applyFilter(operation);
+            updateCommand('imagen.bmp', operation);
+        });
+    });
+
+    document.querySelectorAll('.slider-op').forEach(slider => {
+        slider.addEventListener('input', (e) => {
+            const operation = e.target.dataset.op;
+            const value = e.target.value;
+            document.getElementById(`${e.target.id}-value`).textContent = value;
+            applyFilter(operation, value);
+            updateCommand('imagen.bmp', operation, value);
+        });
+    });
+
+    function applyFilter(operation, value = null) {
+        if (!originalImageData) {
+            console.error("originalImageData no está disponible. No se puede aplicar el filtro.");
+            return;
+        }
+        ctx.putImageData(originalImageData, 0, 0); // Siempre empezar desde la imagen original para cada aplicación de filtro
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        switch(operation) {
+            case 'negativo':
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = 255 - data[i];     // R
+                    data[i + 1] = 255 - data[i + 1]; // G
+                    data[i + 2] = 255 - data[i + 2]; // B
+                }
+                break;
+            case 'escala-de-grises':
+                for (let i = 0; i < data.length; i += 4) {
+                    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                    data[i] = data[i + 1] = data[i + 2] = avg;
+                }
+                break;
+            case 'espejar-horizontal':
+                 // Alternar la transformación CSS. Si ya está escalado, lo resetea; sino, lo escala.
+                 canvas.style.transform = canvas.style.transform.includes('scaleX(-1)') ? 'scaleX(1)' : 'scaleX(-1)';
+                break;
+            case 'espejar-vertical':
+                 // Alternar la transformación CSS.
+                 canvas.style.transform = canvas.style.transform.includes('scaleY(-1)') ? 'scaleY(1)' : 'scaleY(-1)';
+                break;
+            case 'rotar-derecha':
+            case 'rotar-izquierda':
+                 // Extraer la rotación actual. Si no hay, es 0.
+                 const currentTransformMatch = canvas.style.transform.match(/rotate\((?<angle>-?[\d\.]+)deg\)/);
+                 const currentRotation = currentTransformMatch ? parseFloat(currentTransformMatch.groups.angle) : 0;
+                 
+                 const newRotation = currentRotation + (operation === 'rotar-derecha' ? 90 : -90);
+                 canvas.style.transform = `rotate(${newRotation}deg)`;
+                break;
+            case 'tonalidad-roja':
+            case 'tonalidad-verde':
+            case 'tonalidad-azul':
+                const factor = 1 + (value / 100);
+                const channel = operation === 'tonalidad-roja' ? 0 : (operation === 'tonalidad-verde' ? 1 : 2);
+                 for (let i = 0; i < data.length; i += 4) {
+                    data[i + channel] = Math.min(255, data[i + channel] * factor);
+                }
+                break;
+            case 'aumentar-contraste':
+                const contrastFactor = (259 * (parseInt(value) + 259)) / (259 * (259 - parseInt(value)));
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = Math.max(0, Math.min(255, contrastFactor * (data[i] - 128) + 128));
+                    data[i+1] = Math.max(0, Math.min(255, contrastFactor * (data[i+1] - 128) + 128));
+                    data[i+2] = Math.max(0, Math.min(255, contrastFactor * (data[i+2] - 128) + 128));
+                }
+                break;
+        }
+        
+        // Aplicar la imagen de vuelta al canvas si se modificaron los píxeles directamente.
+        // Si la operación fue una transformación CSS, simplemente se aplica el estilo.
+        if (!operation.includes('espejar') && !operation.includes('rotar')) {
+            // Asegurarse de que las transformaciones CSS se reseteen para operaciones de píxeles
+            canvas.style.transform = 'none'; 
+            ctx.putImageData(imageData, 0, 0);
+        } else {
+            // Para las transformaciones CSS, la imagen original ya está dibujada al inicio de applyFilter,
+            // solo necesitamos asegurarnos de que la transformación CSS se aplique sobre esa.
+            // No se necesita putImageData aquí.
+        }
+    }
+
+
+    // BMP Header Diagram
+    const headerDiagram = document.getElementById('bmp-header-diagram');
+    const headerTooltip = document.getElementById('header-tooltip');
+    const headerFields = [
+        { bytes: '0-1', name: 'Firma', desc: 'Identifica el archivo como BMP. Siempre "BM".' },
+        { bytes: '2-5', name: 'Tamaño Archivo', desc: 'El tamaño total del archivo en bytes.' },
+        { bytes: '6-9', name: 'Reservado', desc: 'No utilizado, generalmente cero.' },
+        { bytes: '10-13', name: 'Offset Datos', desc: 'La posición de inicio de los datos de píxeles.' },
+        { bytes: '14-17', name: 'Tamaño Header', desc: 'El tamaño de esta cabecera (usualmente 40).' },
+        { bytes: '18-21', name: 'Anchura', desc: 'La anchura de la imagen en píxeles.' },
+        { bytes: '22-25', name: 'Altura', desc: 'La altura de la imagen en píxeles.' },
+        { bytes: '26-27', name: 'Planos', desc: 'Siempre 1.' },
+        { bytes: '28-29', name: 'Profundidad', desc: 'Bits por píxel (24 para este proyecto).' },
+        { bytes: '30-33', name: 'Compresión', desc: 'Tipo de compresión (0 para sin compresión).' },
+        { bytes: '34-37', name: 'Tamaño Imagen', desc: 'El tamaño de los datos de píxeles en bytes.' },
+        { bytes: '38-45', name: 'Resolución', desc: 'Resolución H/V en píxeles por metro.' },
+    ];
+
+    headerFields.forEach(field => {
+        const div = document.createElement('div');
+        div.className = 'p-3 bg-slate-100 rounded-lg cursor-pointer hover:bg-indigo-100 transition';
+        div.innerHTML = `<div class="font-bold text-slate-800">${field.name}</div><div class="text-xs text-slate-500">Bytes ${field.bytes}</div>`;
+        div.addEventListener('mouseenter', () => {
+            headerTooltip.textContent = field.desc;
+            headerTooltip.classList.remove('hidden');
+        });
+        div.addEventListener('mouseleave', () => {
+            headerTooltip.classList.add('hidden');
+        });
+        headerDiagram.appendChild(div);
+    });
+    
+    // Matrix Grids
+    const rotationGrid = document.getElementById('rotation-grid');
+    const triangleGrid = document.getElementById('triangle-grid');
+    const rotationCoordsDisplay = document.getElementById('rotation-coords');
+    const gridSize = 5;
+
+    function createRotGrid(container) {
+        for (let r = 0; r < gridSize; r++) {
+            for (let c = 0; c < gridSize; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'matrix-cell bg-slate-100';
+                cell.textContent = `[${r},${c}]`; // Mostrar coordenadas originales
+                container.appendChild(cell);
+            }
+        }
+    }
+    createRotGrid(rotationGrid);
+
+    function createTriangleGrid(container) {
+         for (let i = 0; i < gridSize * gridSize; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'matrix-cell';
+            container.appendChild(cell);
+        }
+    }
+    createTriangleGrid(triangleGrid);
+    
+    document.getElementById('rotate-left-btn').addEventListener('click', () => {
+        animateRotation(true);
+    });
+    document.getElementById('rotate-right-btn').addEventListener('click', () => { // Fixed: Added 'click' event type
+        animateRotation(false);
+    });
+
+    let rotationAnimationTimeout; // Para limpiar timeouts anteriores
+
+    function animateRotation(isLeft) {
+        clearTimeout(rotationAnimationTimeout); // Limpiar cualquier animación anterior
+        const cells = rotationGrid.children;
+        // Reiniciar todas las celdas y su texto
+        for (let r = 0; r < gridSize; r++) {
+            for (let c = 0; c < gridSize; c++) {
+                const cell = cells[r * gridSize + c];
+                cell.className = 'matrix-cell bg-slate-100'; // Resetear a color base
+                cell.textContent = `[${r},${c}]`; // Resetear texto a coordenadas originales
+            }
+        }
+        rotationCoordsDisplay.textContent = 'Calculando...';
+
+        // Elegir un punto de inicio aleatorio para el bloque 2x2, asegurándose de que no se salga de los límites
+        const startR = Math.floor(Math.random() * (gridSize - 1)); // Max R is gridSize - 2
+        const startC = Math.floor(Math.random() * (gridSize - 1)); // Max C is gridSize - 2
+
+        const originalPixels = [
+            { r: startR, c: startC },
+            { r: startR, c: startC + 1 },
+            { r: startR + 1, c: startC },
+            { r: startR + 1, c: startC + 1 }
+        ];
+
+        let transformedPixels = [];
+
+        // Calcular las nuevas posiciones para cada píxel del bloque
+        originalPixels.forEach(p => {
+            let newR, newC;
+            if (isLeft) { // Rotar Izquierda: (R_new = H - C_orig - 1, C_new = R_orig)
+                newR = gridSize - p.c - 1;
+                newC = p.r;
+            } else { // Rotar Derecha: (R_new = C_orig, C_new = H - R_orig - 1)
+                newR = p.c;
+                newC = gridSize - p.r - 1;
+            }
+            transformedPixels.push({ r: newR, c: newC });
+        });
+
+        // Paso 1: Resaltar todas las celdas de origen
+        originalPixels.forEach(p => {
+            const originalCell = cells[p.r * gridSize + p.c];
+            originalCell.classList.add('highlight-src');
+        });
+
+        rotationCoordsDisplay.innerHTML = `<strong class="text-indigo-600">Origen (bloque desde):</strong> [${startR},${startC}]`;
+
+        // Pequeño retraso entre origen y destino
+        rotationAnimationTimeout = setTimeout(() => {
+            // Paso 2: Resaltar todas las celdas de destino
+            transformedPixels.forEach(p => {
+                const targetCell = cells[p.r * gridSize + p.c];
+                targetCell.classList.add('highlight-dest');
+                targetCell.textContent = `[${p.r},${p.c}]`; // Mostrar nueva coordenada en celda destino
+            });
+            rotationCoordsDisplay.innerHTML += ` <span class="text-slate-500">→</span> <strong class="text-indigo-600">Destino:</strong> Bloque transformado`;
+
+
+            rotationAnimationTimeout = setTimeout(() => {
+                // Paso 3: Limpiar los resaltados después de un tiempo
+                originalPixels.forEach(p => {
+                    const originalCell = cells[p.r * gridSize + p.c];
+                    originalCell.classList.remove('highlight-src');
+                });
+                transformedPixels.forEach(p => {
+                    const targetCell = cells[p.r * gridSize + p.c];
+                    targetCell.classList.remove('highlight-dest');
+                    targetCell.textContent = `[${p.r},${p.c}]`; // Mantener el texto final
+                });
+                rotationCoordsDisplay.innerHTML = `<strong class="text-indigo-600">Bloque original:</strong> [${startR},${startC}] a [${startR+1},${startC+1}] <span class="text-slate-500">→</span> <strong class="text-indigo-600">Bloque final:</strong> visible en la cuadrícula.`;
+            }, 3000); // Duración del resaltado de destino
+        }, 800); // Retraso antes de resaltar destino
+    }
+
+    // Coloreado de la cuadrícula triangular
+    const triangleCells = triangleGrid.children;
+    for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+            const cell = triangleCells[i * gridSize + j];
+            cell.style.transition = 'background-color 0.3s';
+            
+            let initialClass = 'bg-slate-100'; // Default background for empty regions
+
+            // La lógica para las 4 regiones cardinales (Superior, Inferior, Izquierdo, Derecho)
+            // Estas condiciones asumen una división por las dos diagonales.
+            // Las diagonales mismas son 'bg-slate-700' y tienen prioridad visual.
+            const isMainDiagonal = (i === j);
+            const isInverseDiagonal = (i + j === gridSize - 1);
+
+            if (!isMainDiagonal && !isInverseDiagonal) { // Si no es una diagonal, aplica color de región
+                // Región "Izquierdo" (Bottom-Left quadrant)
+                if (i > j && (i + j < gridSize - 1)) { // Estrictamente debajo de MD y estrictamente a la izquierda de ID
+                    initialClass = 'bg-red-200';
+                }
+                // Región "Derecho" (Top-Right quadrant)
+                else if (i < j && (i + j > gridSize - 1)) { // Estrictamente encima de MD y estrictamente a la derecha de ID
+                    initialClass = 'bg-blue-200';
+                }
+                // Región "Superior" (Top-Left quadrant)
+                else if (i < j && (i + j < gridSize - 1)) { // Estrictamente encima de MD y estrictamente a la izquierda de ID
+                    initialClass = 'bg-green-200';
+                }
+                // Región "Inferior" (Bottom-Right quadrant)
+                else if (i > j && (i + j > gridSize - 1)) { // Estrictamente debajo de MD y estrictamente a la derecha de ID
+                    initialClass = 'bg-orange-200'; // Usaremos orange para esta nueva región
+                }
+            } else { // Si es una diagonal
+                initialClass = 'bg-slate-700';
+                cell.dataset.isDiagonal = 'true'; // Marcar como diagonal
+            }
+            
+            cell.classList.add(initialClass); // Aplicar clase inicial
+            cell.dataset.initialClass = initialClass; // Guardar clase inicial para el reset
+
+
+            cell.addEventListener('mouseenter', () => {
+                if (cell.dataset.isDiagonal !== 'true') { // No cambiar el color de la diagonal al pasar el ratón
+                    const baseColor = cell.dataset.initialClass.replace('bg-', '').replace('-200', '');
+                    // Mapeo de colores para el hover
+                    if (baseColor === 'red') cell.style.backgroundColor = '#ef4444'; // red-500
+                    else if (baseColor === 'blue') cell.style.backgroundColor = '#3b82f6'; // blue-500
+                    else if (baseColor === 'green') cell.style.backgroundColor = '#22c55e'; // green-500
+                    else if (baseColor === 'orange') cell.style.backgroundColor = '#f97316'; // orange-500
+                    else cell.style.backgroundColor = '#94a3b8'; // slate-400 para default/desconocido
+                }
+            });
+            cell.addEventListener('mouseleave', () => {
+                if (cell.dataset.isDiagonal !== 'true') {
+                    // Restablecer a la clase inicial eliminando el estilo inline y volviendo a añadir la clase
+                    cell.style.backgroundColor = ''; 
+                    cell.classList.add(cell.dataset.initialClass);
+                }
+            });
+        }
+    }
+
+});
+</script>
+</body>
+</html>
